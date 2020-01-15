@@ -78,6 +78,10 @@ and service for each microservice.
 Assuming you deployed the application to a local Kubernetes cluster, you should be able
 to access the home page for the application by pointing your browser to http://localhost:30001/.
 
+You should then be able to browse product catalog, add products to shopping cart, log in as an 
+existing test user (username: `user`, password: `pass`) or register as a new user, place an order,
+browse order history, etc.
+
 Once you are finished, you can clean up the environment by executing
 
 ```bash
