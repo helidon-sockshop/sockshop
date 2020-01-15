@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: users
+  name: user  # for compatibility with the existing front-end implementation
   labels:
     app: users
 spec:
