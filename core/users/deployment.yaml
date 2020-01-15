@@ -1,0 +1,18 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: users
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: users
+        version: v1
+    spec:
+      containers:
+        - name: users
+          image: helidonsockshop/users-core:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 7001

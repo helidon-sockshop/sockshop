@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: orders
+  labels:
+    app: orders
+spec:
+  selector:
+    app: orders
+  ports:
+    - port: 80
+      targetPort: 7001
+      name: http

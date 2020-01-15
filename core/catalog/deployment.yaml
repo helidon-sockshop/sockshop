@@ -1,0 +1,18 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: catalog
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: catalog
+        version: v1
+    spec:
+      containers:
+        - name: catalog
+          image: helidonsockshop/catalog-core:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 7001
