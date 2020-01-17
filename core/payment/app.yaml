@@ -1,3 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: payment
+  labels:
+    app: payment
+spec:
+  selector:
+    app: payment
+  ports:
+    - port: 80
+      targetPort: 7001
+      name: http
+---
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
