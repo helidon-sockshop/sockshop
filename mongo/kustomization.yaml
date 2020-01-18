@@ -6,6 +6,8 @@ bases:
 
 resources:
   - carts/db.yaml
+  - catalog/db.yaml
 
 patchesStrategicMerge:
   - carts/app.yaml
+  - catalog/app.yaml
