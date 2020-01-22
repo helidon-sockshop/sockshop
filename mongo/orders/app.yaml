@@ -1,0 +1,10 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: orders
+spec:
+  template:
+    spec:
+      containers:
+        - name: orders
+          image: helidonsockshop/orders-mongo:1.0.0

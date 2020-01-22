@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: shipping-db
+  labels:
+    name: shipping-db
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: shipping-db
+    spec:
+      containers:
+      - name: shipping-db
+        image: mongo:4.2.2
+        ports:
+        - name: mongo
+          containerPort: 27017
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping-db
+  labels:
+    name: shipping-db
+spec:
+  ports:
+    # the port that this service should serve on
+  - port: 27017
+    targetPort: 27017
+  selector:
+    name: shipping-db

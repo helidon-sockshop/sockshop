@@ -1,0 +1,10 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: payment
+spec:
+  template:
+    spec:
+      containers:
+        - name: payment
+          image: helidonsockshop/payment-mongo:1.0.0
