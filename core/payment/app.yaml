@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: payment
-          image: helidonsockshop/payment-core:1.0.0
+          image: helidonsockshop/payment-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001

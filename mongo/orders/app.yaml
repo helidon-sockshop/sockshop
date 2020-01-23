@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: orders
-          image: helidonsockshop/orders-mongo:1.0.0
+          image: helidonsockshop/orders-mongo:1.0.1

@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: carts
-          image: helidonsockshop/carts-core:1.0.0
+          image: helidonsockshop/carts-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001

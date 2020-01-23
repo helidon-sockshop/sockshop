@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: payment
-          image: helidonsockshop/payment-mongo:1.0.0
+          image: helidonsockshop/payment-mongo:1.0.1

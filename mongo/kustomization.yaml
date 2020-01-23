@@ -10,10 +10,13 @@ resources:
   - orders/db.yaml
   - payment/db.yaml
   - shipping/db.yaml
+  - users/db.yaml
 
 patchesStrategicMerge:
+  - ingress.yaml
   - carts/app.yaml
   - catalog/app.yaml
   - orders/app.yaml
   - payment/app.yaml
   - shipping/app.yaml
+  - users/app.yaml
