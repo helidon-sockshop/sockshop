@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: users-db
@@ -6,11 +6,16 @@ metadata:
     name: users-db
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      name: users-db
   template:
     metadata:
       labels:
         name: users-db
     spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       containers:
       - name: users-db
         image: mongo:4.2.2
@@ -24,8 +29,6 @@ spec:
         - name: tmp-volume
           emptyDir:
             medium: Memory
-      nodeSelector:
-        beta.kubernetes.io/os: linux
 ---
 apiVersion: v1
 kind: Service

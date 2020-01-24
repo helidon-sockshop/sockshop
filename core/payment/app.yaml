@@ -13,20 +13,32 @@ spec:
       name: http
 ---
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: payment
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: payment
   template:
     metadata:
       labels:
         app: payment
         version: v1
     spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       containers:
         - name: payment
           image: helidonsockshop/payment-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 400Mi

@@ -13,20 +13,32 @@ spec:
       name: http
 ---
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: carts
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: carts
   template:
     metadata:
       labels:
         app: carts
         version: v1
     spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       containers:
         - name: carts
           image: helidonsockshop/carts-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 400Mi

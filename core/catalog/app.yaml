@@ -13,20 +13,32 @@ spec:
       name: http
 ---
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: catalog
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
   template:
     metadata:
       labels:
         app: catalog
         version: v1
     spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       containers:
         - name: catalog
           image: helidonsockshop/catalog-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 400Mi

@@ -13,20 +13,32 @@ spec:
       name: http
 ---
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: orders
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: orders
   template:
     metadata:
       labels:
         app: orders
         version: v1
     spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       containers:
         - name: orders
           image: helidonsockshop/orders-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 400Mi
