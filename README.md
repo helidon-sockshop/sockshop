@@ -15,7 +15,11 @@ and showcase its features and best practices.
 
 ## Architecture
 
-The application consists of a Node.js-based front end and 6 back end services:
+The application consists of a Node.js-based front end (the same one that is used in the original
+WeaveSocks demo application) and 6 back end services (rewritten from the ground up on top of
+Helidon, implementing the API that the legacy `front-end` service expects).
+
+![Architecture Diagram](./doc/images/architecture.png)
 
 - **[Product Catalog](https://github.com/helidon-sock-shop/catalog)**, which provides 
 REST API that allows you to search product catalog and retrieve individual product details;
@@ -41,7 +45,7 @@ Each service has a _core_ module, which is where most of the code for the servic
 implementation of the data store that is useful for testing.
 
 Most services also have one or more data store-specific modules, which build on the
-_core_ module and demonstrate integrations of various popular data stores with Helidon 
+_core_ module and demonstrate integrations of popular data stores with Helidon 
 (MySQL, Mongo, Redis, etc.)
  
 You can find more details for each service within documentation pages for individual
@@ -112,16 +116,17 @@ $ cd helidon-sock-shop
 $ . sockshop/update.sh
 ```
 
-**Note:** Make sure that you run the update script from the same top-level directory 
-that you used to checkout all the services into or it will fail.
+>**Note:** Make sure that you run the update script from the same top-level directory 
+>that you used to checkout all the services into or it will fail.
 
 ### Building the Code
 
-You can build individual services by running `mvn package` within top-level directory
+You can build individual services by running `mvn clean install` within top-level directory
 for each service, but if you want to build the whole project at once, there is an easier
-way: simply run `mvn package` within the `sockshop` directory.
+way: simply run `mvn clean install` within the `sockshop` directory.
 
-This will compile the code for each service and run the tests. 
+This will compile the code for each service, run the tests, and install module JARs into
+the local Maven repo. 
 
 ### Creating Docker Images
 
@@ -135,7 +140,7 @@ If you only want to build Docker images locally, make sure that you have Docker 
 running and execute the following command: 
 
 ```bash
-$ mvn package -Pdocker
+$ mvn package -Pdocker -DskipTests
 ```
 
 You can then tag images any way you want and push them to a Docker repo of your choice 
@@ -145,16 +150,16 @@ On the other hand, if you cannot or do not want to run Docker locally, you can p
 directly to the remote repository:
 
 ```bash
-$ mvn package -Pdocker -Ddocker.repo={your_docker_repo} -Djib.goal=build
+$ mvn package -Pdocker -DskipTests -Ddocker.repo=<your_docker_repo> -Djib.goal=build
 ```
 
-You should replace `{your_docker_repo}` in the command above with the name of the 
-Docker repository that you can push Docker images to.
+> **Note:** You should replace `<your_docker_repo>` in the command above with the name of the 
+> Docker repository that you can push Docker images to.
 
-We use [Jib Maven Plugin](https://github.com/GoogleContainerTools/jib) to create and publish
-Docker images, with a default Jib goal set to `dockerBuild`, in order to create local image.
-Changing the goal to `build` via `jib.goal` system property allows you to push images to a 
-remote repository directly.
+> **Note:** We use [Jib Maven Plugin](https://github.com/GoogleContainerTools/jib) to create and publish
+> Docker images, with a default Jib goal set to `dockerBuild`, in order to create local image.
+> Changing the goal to `build` via `jib.goal` system property allows you to push images to a 
+> remote repository directly.
 
 ### Running Modified Application
 
@@ -163,7 +168,7 @@ Docker Hub repository, `helidonsockshop`. You will not be able to push the image
 which is why you had to specify `-Ddocker.repo` argument in the command above.
 
 In order to deploy the application that uses your custom Docker images, you will also have to modify
-relevant `deployment.yaml` files in within `sockshop` repository to use correct names for your
+relevant `deployment.yaml` files within `sockshop` repository to use correct names for your
 Docker images.
 
 ## License
