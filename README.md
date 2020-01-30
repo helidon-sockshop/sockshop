@@ -72,7 +72,7 @@ Kubernetes scripts depend on Kustomize, so make sure that you have a newer versi
 that supports it. If you do, you can simply run
 
 ```bash
-$ kubectl apply -k sockshop/core 
+$ kubectl apply -k sockshop/k8s/core 
 ```
 
 from the top-level directory, and this will merge all the files under the specified 
@@ -89,7 +89,7 @@ browse order history, etc.
 Once you are finished, you can clean up the environment by executing
 
 ```bash
-$ kubectl delete -k sockshop/core 
+$ kubectl delete -k sockshop/k8s/core 
 ```
 
 ## Development
