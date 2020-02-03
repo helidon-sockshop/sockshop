@@ -4,13 +4,13 @@ metadata:
   name: sockshop-ingress
 spec:
   rules:
-  - host: original.sockshop.synoki.io
+  - host: original.sockshop.helidon.io
     http:
       paths:
       - backend:
           serviceName: front-end
           servicePort: 80
-  - host: original.api.sockshop.synoki.io
+  - host: api.original.sockshop.helidon.io
     http:
       paths:
         - path: /carts

@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: helidonsockshop/catalog-mongo:1.0.1
+          image: helidon/sockshop/catalog-mongo:1.0.1

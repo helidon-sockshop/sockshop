@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: users
-          image: helidonsockshop/users-mongo:1.0.1
+          image: helidon/sockshop/users-mongo:1.0.1

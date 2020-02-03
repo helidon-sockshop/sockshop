@@ -65,7 +65,7 @@ all project repositories at once.
 
 ## Quick Start
 
-The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidonsockshop/repositories)
+The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidon/sockshop/repositories)
 and Kubernetes deployment scripts from this repo. 
 
 Kubernetes scripts depend on Kustomize, so make sure that you have a newer version of `kubectl`
@@ -130,7 +130,7 @@ the local Maven repo.
 
 ### Creating Docker Images
 
-Pre-built Docker images are already available on [DockerHub](https://hub.docker.com/orgs/helidonsockshop/repositories),
+Pre-built Docker images are already available on [DockerHub](https://hub.docker.com/orgs/helidon/sockshop/repositories),
 so you can simply run `docker pull` to download them and use locally.
 
 However, if you are making changes to various service implementations and need to re-create
@@ -164,7 +164,7 @@ $ mvn package -Pdocker -DskipTests -Ddocker.repo=<your_docker_repo> -Djib.goal=b
 ### Running Modified Application
 
 Kubernetes deployment scripts in this repository reference Docker images from the default
-Docker Hub repository, `helidonsockshop`. You will not be able to push the images to that repo,
+Docker Hub repository, `helidon/sockshop`. You will not be able to push the images to that repo,
 which is why you had to specify `-Ddocker.repo` argument in the command above.
 
 In order to deploy the application that uses your custom Docker images, you will also have to modify

@@ -31,7 +31,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: shipping
-          image: helidonsockshop/shipping-core:1.0.1
+          image: helidon/sockshop/shipping-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001

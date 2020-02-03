@@ -31,7 +31,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: carts
-          image: helidonsockshop/carts-core:1.0.1
+          image: helidon/sockshop/carts-core:1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
