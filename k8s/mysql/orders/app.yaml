@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: orders
-          image: helidon/sockshop/orders-mysql:latest
+          image: helidonsockshop/orders-mysql:latest

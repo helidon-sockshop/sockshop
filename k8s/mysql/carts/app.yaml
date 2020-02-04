@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: carts
-          image: helidon/sockshop/carts-mysql:latest
+          image: helidonsockshop/carts-mysql:latest

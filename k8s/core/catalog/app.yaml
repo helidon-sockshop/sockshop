@@ -31,7 +31,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: catalog
-          image: helidon/sockshop/catalog-core:1.0.1
+          image: helidonsockshop/catalog-core:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 7001

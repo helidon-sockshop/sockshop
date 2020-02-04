@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: shipping
-          image: helidon/sockshop/shipping-mongo:1.0.1
+          image: helidonsockshop/shipping-mongo:latest

@@ -31,7 +31,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: orders
-          image: helidon/sockshop/orders-core:1.0.1
+          image: helidonsockshop/orders-core:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 7001

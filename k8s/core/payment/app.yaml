@@ -31,7 +31,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: payment
-          image: helidon/sockshop/payment-core:1.0.1
+          image: helidonsockshop/payment-core:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 7001

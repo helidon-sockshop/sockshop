@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: helidon/sockshop/catalog-redis:latest
+          image: helidonsockshop/catalog-redis:latest

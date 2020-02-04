@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: payment
-          image: helidon/sockshop/payment-mysql:latest
+          image: helidonsockshop/payment-mysql:latest

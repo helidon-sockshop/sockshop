@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: shipping
-          image: helidon/sockshop/shipping-mysql:latest
+          image: helidonsockshop/shipping-mysql:latest

@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: carts
-          image: helidon/sockshop/carts-mongo:1.0.1
+          image: helidonsockshop/carts-mongo:latest

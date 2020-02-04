@@ -31,7 +31,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: users
-          image: helidon/sockshop/users-core:1.0.1
+          image: helidonsockshop/users-core:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
