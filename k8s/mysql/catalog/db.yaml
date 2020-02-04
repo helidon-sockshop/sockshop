@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-db
+  labels:
+    name: catalog-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: catalog-db
+  template:
+    metadata:
+      labels:
+        name: catalog-db
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      containers:
+      - name: catalog-db
+        image: mysql:8.0.19
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "true"
+        - name: MYSQL_DATABASE
+          value: "catalog"
+        - name: MYSQL_USER
+          value: "catalog"
+        - name: MYSQL_PASSWORD
+          value: "pass"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-db
+  labels:
+    name: catalog-db
+spec:
+  ports:
+    # the port that this service should serve on
+  - port: 3306
+    targetPort: 3306
+  selector:
+    name: catalog-db

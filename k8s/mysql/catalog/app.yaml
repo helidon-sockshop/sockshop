@@ -1,0 +1,10 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: catalog
+spec:
+  template:
+    spec:
+      containers:
+        - name: catalog
+          image: helidon/sockshop/catalog-mysql:latest
