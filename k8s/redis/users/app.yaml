@@ -1,0 +1,10 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: users
+spec:
+  template:
+    spec:
+      containers:
+        - name: users
+          image: helidon/sockshop/users-redis:latest

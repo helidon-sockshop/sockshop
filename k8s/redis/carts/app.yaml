@@ -1,0 +1,10 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: carts
+spec:
+  template:
+    spec:
+      containers:
+        - name: carts
+          image: helidon/sockshop/carts-redis:latest
