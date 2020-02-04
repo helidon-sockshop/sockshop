@@ -10,6 +10,12 @@ spec:
       - backend:
           serviceName: front-end
           servicePort: 80
+  - host: jaeger.redis.sockshop.helidon.io
+    http:
+      paths:
+      - backend:
+          serviceName: jaeger-query
+          servicePort: 16686
   - host: api.redis.sockshop.helidon.io
     http:
       paths:

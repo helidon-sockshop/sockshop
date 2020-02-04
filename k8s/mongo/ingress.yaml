@@ -10,6 +10,12 @@ spec:
       - backend:
           serviceName: front-end
           servicePort: 80
+  - host: jaeger.mongo.sockshop.helidon.io
+    http:
+      paths:
+      - backend:
+          serviceName: jaeger-query
+          servicePort: 16686
   - host: api.mongo.sockshop.helidon.io
     http:
       paths:

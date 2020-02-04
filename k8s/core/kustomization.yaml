@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - ingress.yaml
+  - jaeger.yaml
   - carts/app.yaml
   - catalog/app.yaml
   - orders/app.yaml

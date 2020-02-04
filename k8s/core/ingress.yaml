@@ -10,6 +10,12 @@ spec:
       - backend:
           serviceName: front-end
           servicePort: 80
+  - host: jaeger.memory.sockshop.helidon.io
+    http:
+      paths:
+      - backend:
+          serviceName: jaeger-query
+          servicePort: 16686
   - host: api.memory.sockshop.helidon.io
     http:
       paths:

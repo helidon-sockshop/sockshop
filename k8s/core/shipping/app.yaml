@@ -16,6 +16,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: shipping
+  annotations:
+    "sidecar.jaegertracing.io/inject": "true"
 spec:
   replicas: 1
   selector:
