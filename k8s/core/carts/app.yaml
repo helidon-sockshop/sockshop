@@ -16,8 +16,6 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: carts
-  annotations:
-    "sidecar.jaegertracing.io/inject": "true"
 spec:
   replicas: 1
   selector:
@@ -35,6 +33,13 @@ spec:
         - name: carts
           image: helidonsockshop/carts-core:latest
           imagePullPolicy: Always
+          env:
+            - name: JAEGER_AGENT_HOST
+              value: "jaeger-collector"
+            - name: JAEGER_SAMPLER_TYPE
+              value: "const"
+            - name: JAEGER_SAMPLER_PARAM
+              value: "1"
           ports:
             - containerPort: 7001
           resources:
