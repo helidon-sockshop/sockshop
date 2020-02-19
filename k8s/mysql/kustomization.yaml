@@ -13,6 +13,7 @@ resources:
 
 patchesStrategicMerge:
   - ingress.yaml
+  - mp-ingress.yaml
   - carts/app.yaml
   - catalog/app.yaml
   - orders/app.yaml
