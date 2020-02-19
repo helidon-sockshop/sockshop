@@ -1,0 +1,36 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: swagger
+  labels:
+    app: swagger
+spec:
+  selector:
+    app: swagger
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: swagger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swagger
+  template:
+    metadata:
+      labels:
+        app: swagger
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      containers:
+        - name: swagger
+          image: swaggerapi/swagger-ui:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080

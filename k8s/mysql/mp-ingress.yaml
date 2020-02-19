@@ -9,6 +9,10 @@ spec:
   - host: mp.mysql.sockshop.helidon.io
     http:
       paths:
+        - path: /swagger(/|$)(.*)
+          backend:
+            serviceName: swagger
+            servicePort: 80
         - path: /carts(/|$)(.*)
           backend:
             serviceName: carts
