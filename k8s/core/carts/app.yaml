@@ -34,7 +34,7 @@ spec:
           image: helidonsockshop/carts-core:latest
           imagePullPolicy: Always
           env:
-            - name: JAEGER_AGENT_HOST
+            - name: TRACING_HOST
               value: "jaeger-collector"
             - name: JAEGER_SAMPLER_TYPE
               value: "const"
