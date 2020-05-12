@@ -69,7 +69,7 @@ The easiest way to try the demo is to use [provided Docker images](https://hub.d
 and Kubernetes deployment scripts from this repo. 
 
 Kubernetes scripts depend on Kustomize, so make sure that you have a newer version of `kubectl`
-that supports it. If you do, you can simply run
+that supports it (at least 1.14 or above). If you do, you can simply run
 
 ```bash
 $ kubectl apply -k sockshop/k8s/core 
@@ -79,8 +79,13 @@ from the top-level directory, and this will merge all the files under the specif
 directory and create all Kubernetes resources defined by them, such as deployment
 and service for each microservice.
 
-Assuming you deployed the application to a local Kubernetes cluster, you should be able
-to access the home page for the application by pointing your browser to http://localhost:30001/.
+Port-forward the front-end UI using the following
+```bash
+$ export FRONT_END_POD=$(kubectl get pods | grep front-end | awk '{print $1}')
+$ kubectl port-forward $FRONT_END_POD 8079:8079
+```
+
+You should be able to access the home page for the application by pointing your browser to http://localhost:8079/.
 
 You should then be able to browse product catalog, add products to shopping cart, log in as an 
 existing test user (username: `user`, password: `pass`) or register as a new user, place an order,
@@ -90,7 +95,95 @@ Once you are finished, you can clean up the environment by executing
 
 ```bash
 $ kubectl delete -k sockshop/k8s/core 
+```   
+
+## Extending the Deployment
+
+You can extend the deployment in a number of ways if you are using a remote Kuberenetes cluster.
+
+### Expose via a Load Balancer
+
+1. Create a `ingress-nginx` namespace
+
+```bash
+$ kubectl create namespace ingress-nginx
+```                                     
+
+1. Create the Load Balancer
+
+```bash
+$ kubectl apply -f sockshop/k8s/optional/ingress-service.yaml 
+
+$ kubectl get services -n ingress-nginx
+NAME            TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)                      AGE
+ingress-nginx   LoadBalancer   AAA.BBB.CCC.DDD   WWW.XXX.YYY.ZZZ  80:31475/TCP,443:30578/TCP   17s
+```      
+
+Once you have been assigned an external IP address, continue to the next step.              
+
+1. Setup Domains
+
+You must have access to a top level domain for which you can create sub-domains to 
+allow access to the application via a Load Balancer (LB).
+
+For example if your top level domain is `mycompany.com` then the following 
+sub-domains will be required for the `sockshop` domain.
+
+* memory.sockshop.mycompany.com
+* api.memory.sockshop.mycompany.com
+* jaeger.memory.sockshop.mycompany.com
+* mp.memory.sockshop.mycompany.com  
+
+Configure your DNS provider to point all of the above to your external LB IP address. 
+
+1. Apply the ingress
+
+Export your top level domain. e.g. for example for `sockshop.mycompany.com` use: 
+
+```bash 
+$ export export SOCKSHOP_HOST=sockshop.mycompany.com                            
+
+$ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl apply -f -
+```   
+
+To cleanup the ingress for your deployment, issue the following
+
+```bash 
+$ export export SOCKSHOP_HOST=sockshop.mycompany.com                            
+
+$ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl delete -f -
+``` 
+
+If you wish to remove your LB, issue the following
+
+```bash
+$ kubectl delete -f sockshop/k8s/optional/ingress-service.yaml 
 ```
+
+### Configure Jaegar
+
+```bash
+$ kubectl create -f sockshop/k8s/optional/jaeger-operator.yaml 
+
+$ kubectl create -f sockshop/k8s/optional/jaegar.yaml
+
+$ kubectl delete namespace observability
+```
+
+### Cleanup the Extensions
+
+Once you are finished, you can clean up the environment by executing
+
+```bash
+$ kubectl delete -f sockshop/k8s/optional/ingress-service.yanl
+
+$ kubectl delete -f sockshop/k8s/optional/jaeger-operator.yaml 
+
+$ kubectl delete -f sockshop/k8s/optional/jaegar.yaml
+
+$ kubectl delete namespace observability
+```   
+
 
 ## Development
  
