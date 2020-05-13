@@ -85,7 +85,7 @@ $ export FRONT_END_POD=$(kubectl get pods | grep front-end | awk '{print $1}')
 $ kubectl port-forward $FRONT_END_POD 8079:8079
 ```
 
-> Note: If you have installed into a namespace then add the `--namespace` option to the above kubectl commands.
+> Note: If you have installed into a namespace then add the `--namespace` option to all kubectl commands in these instructions.
 
 You should be able to access the home page for the application by pointing your browser to http://localhost:8079/.
 
@@ -111,7 +111,7 @@ You can extend the deployment in a number of ways if you are using a remote Kube
 $ kubectl create namespace ingress-nginx
 ```                                     
 
-1. Create the Load Balancer
+2. Create the Load Balancer
 
 ```bash
 $ kubectl apply -f k8s/optional/ingress-service.yaml 
@@ -140,7 +140,7 @@ sub-domains will be required for the `sockshop` domain.
 
 Configure your DNS provider to point all of the above to your external LB IP address. 
 
-1. Apply the ingress
+2. Apply the ingress
 
 Export your top level domain. e.g. for example for `sockshop.mycompany.com` use: 
 
