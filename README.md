@@ -65,11 +65,24 @@ all project repositories at once.
 
 ## Quick Start
 
-The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidon/repositories)
+The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidonsockshop/repositories)
 and Kubernetes deployment scripts from this repo. 
 
 Kubernetes scripts depend on Kustomize, so make sure that you have a newer version of `kubectl`
-that supports it (at least 1.14 or above). If you do, you can simply run the following from the `sockshop` directory
+that supports it (at least 1.14 or above). 
+
+If you do, you can simply run the following command from the `sockshop` directory
+and replace `BACKEND` with one of the following indicating the type of back-end you want to deploy.
+
+* core - Core back end
+* mongo - MongoDB back-end
+* mysql - MySQL database back-end 
+
+```bash
+$ kubectl apply -k k8s/BACKEND 
+``` 
+
+e.g.
 
 ```bash
 $ kubectl apply -k k8s/core 
@@ -103,24 +116,20 @@ $ kubectl delete -k k8s/core
 
 You can extend the deployment in a number of ways if you are using a remote Kuberenetes cluster.
 
-### Expose via a Load Balancer
+### Pre-Requisites
 
-1. Create a `ingress-nginx` namespace
+You must download `envsubst` for your platform from [https://github.com/a8m/envsubst](https://github.com/a8m/envsubst). 
 
-    ```bash
-    $ kubectl create namespace ingress-nginx
-    ```                                     
+### Expose via a Load Balancer                               
 
 1. Create the Load Balancer
 
     ```bash
-    $ kubectl apply -f k8s/optional/ingress-service.yaml 
+    $ kubectl apply -f k8s/optional/ingress-controller.yaml 
     
     $ kubectl get services -n ingress-nginx
     NAME            TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)                      AGE
     ingress-nginx   LoadBalancer   AAA.BBB.CCC.DDD   WWW.XXX.YYY.ZZZ  80:31475/TCP,443:30578/TCP   17s    
-    
-    $ kubectl apply -f k8s/optional/ingress-controller.yaml
     ```      
 
     Once you have been assigned an external IP address, continue to the next step.              
@@ -130,30 +139,30 @@ You can extend the deployment in a number of ways if you are using a remote Kube
     You must have access to a top level domain for which you can create sub-domains to 
     allow access to the application via a Load Balancer (LB).
 
-    For example if your top level domain is `mycompany.com` then the following 
-    sub-domains will be required for the `sockshop` domain.
+    For example if your top level domain is `mycompany.com` then you
+    should create a single wildcard DNS entry `*.sockshop.mycompany.com` to 
+    point to your external LB IP address.
+    
+1. Create the ingress
 
-    * memory.sockshop.mycompany.com
-    * api.memory.sockshop.mycompany.com
-    * jaeger.memory.sockshop.mycompany.com
-    * mp.memory.sockshop.mycompany.com  
+    Each time you use a different back-end you will need to create a new ingress.
 
-    Configure your DNS provider to point all of the above to your external LB IP address. 
-
-1. Apply the ingress
-
-    Export your top level domain. e.g. for example for `sockshop.mycompany.com` use: 
+    In your terminal, export (or SET for Windows) your top level domain
+    and the backend you are using. 
+    
+    For example for domain `sockshop.mycompany.com` and `memory` backend, use the following 
     
     ```bash
-    $ export SOCKSHOP_HOST=sockshop.mycompany.com                            
+    $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com
+    $ export SOCKSHOP_BACKEND=memory                            
     
-    $ cat k8s/optional/ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl apply -f -
+    $ envsubst -i k8s/optional/ingress.yaml| kubectl apply -f -
     
     $ kubectl get ingress  
     
-    NAME               HOSTS                                                                                      ADDRESS           PORTS   AGE
-    mp-ingress         mp.memory.mycompany.helidon.io                                                                       XXX.XXX.XXX.XXX   80      12d
-    sockshop-ingress   memory.sockshop.mycompany.io,jaeger.memory.sockshop.mycompany.io,api.memory.mycompany.mycompany.io   XXX.XXX.XXX.XXX   80      12d
+    NAME               HOSTS                                                                                         ADDRESS           PORTS   AGE
+    mp-ingress         mp.memory.mycompany.com                                                                       XXX.XXX.XXX.XXX   80      12d
+    sockshop-ingress   memory.sockshop.mycompany.com,jaeger.memory.sockshop.mycompany.com,api.memory.mycompany.com   XXX.XXX.XXX.XXX   80      12d
     ```         
 
 1. Access the application
@@ -162,18 +171,22 @@ You can extend the deployment in a number of ways if you are using a remote Kube
 
 1. Cleanup the ingress
 
-    To cleanup the ingress for your deployment, issue the following
+    To cleanup the ingress for your deployment, issue the following ensuring you have the same
+    environment variables set from when you created the ingress. 
 
     ```bash 
-    $ export SOCKSHOP_HOST=sockshop.mycompany.com                            
+    $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
+    $ export SOCKSHOP_BACKEND=memory                             
     
-    $ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl delete -f -
+    $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f -
     ``` 
+    
+1. Remove the LB (Optional)
     
     If you wish to remove your LB, issue the following
     
     ```bash
-    $ kubectl delete -f k8s/optional/ingress-service.yaml 
+    $ kubectl delete -f k8s/optional/ingress-controller.yaml
     ```
 
 ### Configure Jaegar

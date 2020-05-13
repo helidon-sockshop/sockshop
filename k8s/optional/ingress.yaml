@@ -4,19 +4,19 @@ metadata:
   name: sockshop-ingress
 spec:
   rules:
-  - host: memory.${SOCKSHOP_DOMAIN}
+  - host: ${SOCKSHOP_BACKEND:=memory}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
     http:
       paths:
       - backend:
           serviceName: front-end
           servicePort: 80
-  - host: jaeger.memory.${SOCKSHOP_DOMAIN}
+  - host: jaeger.${SOCKSHOP_BACKEND:=memory}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
     http:
       paths:
       - backend:
           serviceName: jaeger-query
           servicePort: 16686
-  - host: api.memory.${SOCKSHOP_DOMAIN}
+  - host: api.${SOCKSHOP_BACKEND:=memory}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
     http:
       paths:
         - path: /carts
@@ -68,7 +68,7 @@ metadata:
   name: mp-ingress
 spec:
   rules:
-  - host: mp.memory.${SOCKSHOP_DOMAIN}
+  - host: mp.${SOCKSHOP_BACKEND:=memory}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
     http:
       paths:
         - path: /swagger(/|$)(.*)
