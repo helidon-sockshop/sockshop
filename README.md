@@ -107,74 +107,74 @@ You can extend the deployment in a number of ways if you are using a remote Kube
 
 1. Create a `ingress-nginx` namespace
 
-```bash
-$ kubectl create namespace ingress-nginx
-```                                     
+    ```bash
+    $ kubectl create namespace ingress-nginx
+    ```                                     
 
-2. Create the Load Balancer
+1. Create the Load Balancer
 
-```bash
-$ kubectl apply -f k8s/optional/ingress-service.yaml 
+    ```bash
+    $ kubectl apply -f k8s/optional/ingress-service.yaml 
+    
+    $ kubectl get services -n ingress-nginx
+    NAME            TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)                      AGE
+    ingress-nginx   LoadBalancer   AAA.BBB.CCC.DDD   WWW.XXX.YYY.ZZZ  80:31475/TCP,443:30578/TCP   17s    
+    
+    $ kubectl apply -f k8s/optional/ingress-controller.yaml
+    ```      
 
-$ kubectl get services -n ingress-nginx
-NAME            TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)                      AGE
-ingress-nginx   LoadBalancer   AAA.BBB.CCC.DDD   WWW.XXX.YYY.ZZZ  80:31475/TCP,443:30578/TCP   17s    
-
-$ kubectl apply -f k8s/optional/ingress-controller.yaml
-```      
-
-Once you have been assigned an external IP address, continue to the next step.              
+    Once you have been assigned an external IP address, continue to the next step.              
 
 1. Setup Domains
 
-You must have access to a top level domain for which you can create sub-domains to 
-allow access to the application via a Load Balancer (LB).
+    You must have access to a top level domain for which you can create sub-domains to 
+    allow access to the application via a Load Balancer (LB).
 
-For example if your top level domain is `mycompany.com` then the following 
-sub-domains will be required for the `sockshop` domain.
+    For example if your top level domain is `mycompany.com` then the following 
+    sub-domains will be required for the `sockshop` domain.
 
-* memory.sockshop.mycompany.com
-* api.memory.sockshop.mycompany.com
-* jaeger.memory.sockshop.mycompany.com
-* mp.memory.sockshop.mycompany.com  
+    * memory.sockshop.mycompany.com
+    * api.memory.sockshop.mycompany.com
+    * jaeger.memory.sockshop.mycompany.com
+    * mp.memory.sockshop.mycompany.com  
 
-Configure your DNS provider to point all of the above to your external LB IP address. 
+    Configure your DNS provider to point all of the above to your external LB IP address. 
 
-2. Apply the ingress
+1. Apply the ingress
 
-Export your top level domain. e.g. for example for `sockshop.mycompany.com` use: 
-
-```bash
-$ export SOCKSHOP_HOST=sockshop.mycompany.com                            
-
-$ cat k8s/optional/ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl apply -f -
-
-$ kubectl get ingress  
-
-NAME               HOSTS                                                                                      ADDRESS           PORTS   AGE
-mp-ingress         mp.memory.mycompany.helidon.io                                                                       XXX.XXX.XXX.XXX   80      12d
-sockshop-ingress   memory.sockshop.mycompany.io,jaeger.memory.sockshop.mycompany.io,api.memory.mycompany.mycompany.io   XXX.XXX.XXX.XXX   80      12d
-```         
+    Export your top level domain. e.g. for example for `sockshop.mycompany.com` use: 
+    
+    ```bash
+    $ export SOCKSHOP_HOST=sockshop.mycompany.com                            
+    
+    $ cat k8s/optional/ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl apply -f -
+    
+    $ kubectl get ingress  
+    
+    NAME               HOSTS                                                                                      ADDRESS           PORTS   AGE
+    mp-ingress         mp.memory.mycompany.helidon.io                                                                       XXX.XXX.XXX.XXX   80      12d
+    sockshop-ingress   memory.sockshop.mycompany.io,jaeger.memory.sockshop.mycompany.io,api.memory.mycompany.mycompany.io   XXX.XXX.XXX.XXX   80      12d
+    ```         
 
 1. Access the application
 
-Access the application via the endpoint http://memory.sockshop.mycompany.com/ 
+    Access the application via the endpoint http://memory.sockshop.mycompany.com/ 
 
 1. Cleanup the ingress
 
-To cleanup the ingress for your deployment, issue the following
+    To cleanup the ingress for your deployment, issue the following
 
-```bash 
-$ export SOCKSHOP_HOST=sockshop.mycompany.com                            
-
-$ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl delete -f -
-``` 
-
-If you wish to remove your LB, issue the following
-
-```bash
-$ kubectl delete -f k8s/optional/ingress-service.yaml 
-```
+    ```bash 
+    $ export SOCKSHOP_HOST=sockshop.mycompany.com                            
+    
+    $ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl delete -f -
+    ``` 
+    
+    If you wish to remove your LB, issue the following
+    
+    ```bash
+    $ kubectl delete -f k8s/optional/ingress-service.yaml 
+    ```
 
 ### Configure Jaegar
 
