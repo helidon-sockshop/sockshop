@@ -74,7 +74,7 @@ that supports it (at least 1.14 or above).
 If you do, you can simply run the following command from the `sockshop` directory
 and replace `BACKEND` with one of the following indicating the type of back-end you want to deploy.
 
-* core - Core back end
+* core - Core back-end
 * mongo - MongoDB back-end
 * mysql - MySQL database back-end 
 
@@ -93,9 +93,19 @@ directory and create all Kubernetes resources defined by them, such as deploymen
 and service for each microservice.
 
 Port-forward the front-end UI using the following
+
+Mac/Linux
+
 ```bash
-$ export FRONT_END_POD=$(kubectl get pods | grep front-end | awk '{print $1}')
+$ export FRONT_END_POD=$(kubectl get pods -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}')
 $ kubectl port-forward $FRONT_END_POD 8079:8079
+```
+
+Windows:
+```command
+kubectl get pods -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
+SET /P FRONT_END_POD=<pod.txt
+kubectl port-forward %FRONT_END_POD% 8079:8079
 ```
 
 > Note: If you have installed into a namespace then add the `--namespace` option to all kubectl commands in these instructions.
