@@ -65,14 +65,14 @@ all project repositories at once.
 
 ## Quick Start
 
-The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidon/sockshop/repositories)
+The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidon/repositories)
 and Kubernetes deployment scripts from this repo. 
 
 Kubernetes scripts depend on Kustomize, so make sure that you have a newer version of `kubectl`
-that supports it (at least 1.14 or above). If you do, you can simply run
+that supports it (at least 1.14 or above). If you do, you can simply run the following from the `sockshop` directory
 
 ```bash
-$ kubectl apply -k sockshop/k8s/core 
+$ kubectl apply -k k8s/core 
 ```
 
 from the top-level directory, and this will merge all the files under the specified 
@@ -85,6 +85,8 @@ $ export FRONT_END_POD=$(kubectl get pods | grep front-end | awk '{print $1}')
 $ kubectl port-forward $FRONT_END_POD 8079:8079
 ```
 
+> Note: If you have installed into a namespace then add the `--namespace` option to the above kubectl commands.
+
 You should be able to access the home page for the application by pointing your browser to http://localhost:8079/.
 
 You should then be able to browse product catalog, add products to shopping cart, log in as an 
@@ -94,7 +96,7 @@ browse order history, etc.
 Once you are finished, you can clean up the environment by executing
 
 ```bash
-$ kubectl delete -k sockshop/k8s/core 
+$ kubectl delete -k k8s/core 
 ```   
 
 ## Extending the Deployment
@@ -112,11 +114,13 @@ $ kubectl create namespace ingress-nginx
 1. Create the Load Balancer
 
 ```bash
-$ kubectl apply -f sockshop/k8s/optional/ingress-service.yaml 
+$ kubectl apply -f k8s/optional/ingress-service.yaml 
 
 $ kubectl get services -n ingress-nginx
 NAME            TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)                      AGE
-ingress-nginx   LoadBalancer   AAA.BBB.CCC.DDD   WWW.XXX.YYY.ZZZ  80:31475/TCP,443:30578/TCP   17s
+ingress-nginx   LoadBalancer   AAA.BBB.CCC.DDD   WWW.XXX.YYY.ZZZ  80:31475/TCP,443:30578/TCP   17s    
+
+$ kubectl apply -f k8s/optional/ingress-controller.yaml
 ```      
 
 Once you have been assigned an external IP address, continue to the next step.              
@@ -140,16 +144,28 @@ Configure your DNS provider to point all of the above to your external LB IP add
 
 Export your top level domain. e.g. for example for `sockshop.mycompany.com` use: 
 
-```bash 
-$ export export SOCKSHOP_HOST=sockshop.mycompany.com                            
+```bash
+$ export SOCKSHOP_HOST=sockshop.mycompany.com                            
 
-$ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl apply -f -
-```   
+$ cat k8s/optional/ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl apply -f -
+
+$ kubectl get ingress  
+
+NAME               HOSTS                                                                                      ADDRESS           PORTS   AGE
+mp-ingress         mp.memory.mycompany.helidon.io                                                                       XXX.XXX.XXX.XXX   80      12d
+sockshop-ingress   memory.sockshop.mycompany.io,jaeger.memory.sockshop.mycompany.io,api.memory.mycompany.mycompany.io   XXX.XXX.XXX.XXX   80      12d
+```         
+
+1. Access the application
+
+Access the application via the endpoint http://memory.sockshop.mycompany.com/ 
+
+1. Cleanup the ingress
 
 To cleanup the ingress for your deployment, issue the following
 
 ```bash 
-$ export export SOCKSHOP_HOST=sockshop.mycompany.com                            
+$ export SOCKSHOP_HOST=sockshop.mycompany.com                            
 
 $ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl delete -f -
 ``` 
@@ -157,29 +173,30 @@ $ cat ingress.yaml | sed 's/\${SOCKSHOP_DOMAIN}/'$SOCKSHOP_HOST'/' | kubectl del
 If you wish to remove your LB, issue the following
 
 ```bash
-$ kubectl delete -f sockshop/k8s/optional/ingress-service.yaml 
+$ kubectl delete -f k8s/optional/ingress-service.yaml 
 ```
 
 ### Configure Jaegar
 
 ```bash
-$ kubectl create -f sockshop/k8s/optional/jaeger-operator.yaml 
+$ kubectl create -f k8s/optional/jaeger-operator.yaml 
 
-$ kubectl create -f sockshop/k8s/optional/jaegar.yaml
+$ kubectl create -f k8s/optional/jaegar.yaml
+```                                         
 
-$ kubectl delete namespace observability
-```
+Access the application via the endpoint http://jaegar.memory.sockshop.mycompany.com/ 
+
 
 ### Cleanup the Extensions
 
 Once you are finished, you can clean up the environment by executing
 
 ```bash
-$ kubectl delete -f sockshop/k8s/optional/ingress-service.yanl
+$ kubectl delete -f k8s/optional/ingress-service.yanl
 
-$ kubectl delete -f sockshop/k8s/optional/jaeger-operator.yaml 
+$ kubectl delete -f k8s/optional/jaeger-operator.yaml 
 
-$ kubectl delete -f sockshop/k8s/optional/jaegar.yaml
+$ kubectl delete -f k8s/optional/jaegar.yaml
 
 $ kubectl delete namespace observability
 ```   
@@ -198,7 +215,7 @@ The easiest way to checkout the source code for all the services is to run the p
 ```bash
 $ mkdir helidon-sock-shop
 $ cd helidon-sock-shop
-$ bash <(curl -s https://raw.githubusercontent.com/helidon-sock-shop/sockshop/master/update.sh)
+$ bash <(curl -s https://raw.githubusercontent.com/helidon-sock-shop/master/update.sh)
 ```
 
 Once you have the code locally, you can update it to the latest version by running the 
@@ -206,7 +223,7 @@ same script locally:
 
 ```bash
 $ cd helidon-sock-shop
-$ . sockshop/update.sh
+$ . update.sh
 ```
 
 >**Note:** Make sure that you run the update script from the same top-level directory 
@@ -223,7 +240,7 @@ the local Maven repo.
 
 ### Creating Docker Images
 
-Pre-built Docker images are already available on [DockerHub](https://hub.docker.com/orgs/helidon/sockshop/repositories),
+Pre-built Docker images are already available on [DockerHub](https://hub.docker.com/orgs/helidon/repositories),
 so you can simply run `docker pull` to download them and use locally.
 
 However, if you are making changes to various service implementations and need to re-create
