@@ -77,6 +77,7 @@ and replace `BACKEND` with one of the following indicating the type of back-end 
 * core - Core back-end
 * mongo - MongoDB back-end
 * mysql - MySQL database back-end 
+* redis - Redis back-end
 
 ```bash
 $ kubectl apply -k k8s/BACKEND 
