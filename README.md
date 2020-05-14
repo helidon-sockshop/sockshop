@@ -13,6 +13,25 @@ This demo still uses the original front end implementation provided by Weavework
 but all back end services have been re-implemented from scratch to use Helidon MP 
 and showcase its features and best practices.
 
+# Table of Contents
+
+* [Architecture](#architecture)
+* [Project Structure](#project-structure)
+* [Quick Start](#quick-start)
+* [Complete Application Deployment](#complete-application-deployment)
+  * [Pre-Requisites](#pre-requisites)
+  * [Expose Application via a Load Balancer](#expose-application-via-a-load-balancer)
+  * [Configure Jaeger](#configure-jaeger)
+  * [Access Swagger](#access-swagger)
+  * [Cleanup](#cleanup)  
+* [Development](#development)
+  * [Checking Out the Project](#checking-out-the-project)
+  * [Building the Code](#building-the-code)
+  * [Creating Docker Images](#creating-docker-images)
+  * [Running Modified Application](#running-modified-application)
+* [License](#license)  
+
+
 ## Architecture
 
 The application consists of a Node.js-based front end (the same one that is used in the original
@@ -74,10 +93,10 @@ that supports it (at least 1.14 or above).
 If you do, you can simply run the following command from the `sockshop` directory
 and replace `BACKEND` with one of the following indicating the type of back-end you want to deploy.
 
-* core - Core back-end
-* mongo - MongoDB back-end
-* mysql - MySQL database back-end 
-* redis - Redis back-end
+* `core` - In-memory only back-end
+* `mongo` - MongoDB back-end
+* `mysql` - MySQL database back-end 
+* `redis` - Redis back-end
 
 ```bash
 $ kubectl apply -k k8s/BACKEND 
@@ -89,7 +108,7 @@ e.g.
 $ kubectl apply -k k8s/core 
 ```
 
-from the top-level directory, and this will merge all the files under the specified 
+This will merge all the files under the specified 
 directory and create all Kubernetes resources defined by them, such as deployment
 and service for each microservice.
 
@@ -109,7 +128,7 @@ SET /P FRONT_END_POD=<pod.txt
 kubectl port-forward %FRONT_END_POD% 8079:8079
 ```
 
-> Note: If you have installed into a namespace then add the `--namespace` option to all kubectl commands in these instructions.
+> Note: If you have installed into a namespace then add the `--namespace` option to all `kubectl` commands in these instructions.
 
 You should be able to access the home page for the application by pointing your browser to http://localhost:8079/.
 
@@ -123,15 +142,23 @@ Once you are finished, you can clean up the environment by executing
 $ kubectl delete -k k8s/core 
 ```   
 
-## Extending the Deployment
+## Complete Application Deployment
 
-You can extend the deployment in a number of ways if you are using a remote Kuberenetes cluster.
+The Quick Start shows how you can run the application locally, but that may not 
+be enough if you want to experiment by scaling individual services, look at tracing data in Jaeger, 
+monitor services via Prometheus and Grafana, or make API calls directly via Swagger UI.
+
+To do all of the above, you need to deploy the services into a managed Kubernetes cluster 
+in the cloud, by following the same set of steps described above (except for port forwarding, 
+which is not necessary), and performing a few additional steps.
 
 ### Pre-Requisites
 
-You must download `envsubst` for your platform from [https://github.com/a8m/envsubst](https://github.com/a8m/envsubst). 
+You must download and install `envsubst` for your platform from 
+[https://github.com/a8m/envsubst](https://github.com/a8m/envsubst) and make it
+available in your `PATH`.
 
-### Expose via a Load Balancer                               
+### Expose Application via a Load Balancer                               
 
 1. Create the Load Balancer
 
@@ -165,20 +192,48 @@ You must download `envsubst` for your platform from [https://github.com/a8m/envs
     
     ```bash
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com
-    $ export SOCKSHOP_BACKEND=memory                            
+    $ export SOCKSHOP_BACKEND=core                            
     
-    $ envsubst -i k8s/optional/ingress.yaml| kubectl apply -f -
+    $ envsubst -i k8s/optional/ingress.yaml | kubectl apply -f -
     
     $ kubectl get ingress  
     
-    NAME               HOSTS                                                                                         ADDRESS           PORTS   AGE
-    mp-ingress         mp.memory.mycompany.com                                                                       XXX.XXX.XXX.XXX   80      12d
-    sockshop-ingress   memory.sockshop.mycompany.com,jaeger.memory.sockshop.mycompany.com,api.memory.mycompany.com   XXX.XXX.XXX.XXX   80      12d
+    NAME               HOSTS                                                                                              ADDRESS           PORTS   AGE
+    mp-ingress         mp.core.sockshop.mycompany.com                                                                     XXX.XXX.XXX.XXX   80      12d
+    sockshop-ingress   memory.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
     ```         
 
 1. Access the application
 
     Access the application via the endpoint http://memory.sockshop.mycompany.com/ 
+
+### Configure Jaeger
+            
+1. Install the Jaeger operator
+ 
+    This is only required once regardless of the number of backends you want to deploy.
+            
+    ```bash
+    $ kubectl create -f k8s/optional/jaeger-operator.yaml 
+    ```
+
+1. Configured Jaeger
+
+    This is required for each back-end namespace.
+    
+    ```bash
+    $ kubectl create -f k8s/optional/jaeger.yaml -n namespace
+    ```                                         
+
+1. Exercise the Application and access Jaeger
+
+    Using the application UI, place an order or two then look at the trace for the `newOrder` endpoint using the
+    Jaeger UI at http://jaeger.core.sockshop.mycompany.com/.
+
+### Access Swagger
+
+
+### Cleanup
 
 1. Cleanup the ingress
 
@@ -200,31 +255,13 @@ You must download `envsubst` for your platform from [https://github.com/a8m/envs
     $ kubectl delete -f k8s/optional/ingress-controller.yaml
     ```
 
-### Configure Jaegar
+1. Remove Jaeger
 
-```bash
-$ kubectl create -f k8s/optional/jaeger-operator.yaml 
-
-$ kubectl create -f k8s/optional/jaegar.yaml
-```                                         
-
-Access the application via the endpoint http://jaegar.memory.sockshop.mycompany.com/ 
-
-
-### Cleanup the Extensions
-
-Once you are finished, you can clean up the environment by executing
-
-```bash
-$ kubectl delete -f k8s/optional/ingress-service.yanl
-
-$ kubectl delete -f k8s/optional/jaeger-operator.yaml 
-
-$ kubectl delete -f k8s/optional/jaegar.yaml
-
-$ kubectl delete namespace observability
-```   
-
+    ```bash
+    $ kubectl delete -f k8s/optional/jaeger-operator.yaml 
+    
+    $ kubectl delete -f k8s/optional/jaeger.yaml
+    ```   
 
 ## Development
  
@@ -239,7 +276,7 @@ The easiest way to checkout the source code for all the services is to run the p
 ```bash
 $ mkdir helidon-sock-shop
 $ cd helidon-sock-shop
-$ bash <(curl -s https://raw.githubusercontent.com/helidon-sock-shop/master/update.sh)
+$ bash <(curl -s https://raw.githubusercontent.com/helidon-sock-shop/sockshop/master/update.sh)
 ```
 
 Once you have the code locally, you can update it to the latest version by running the 
@@ -247,7 +284,7 @@ same script locally:
 
 ```bash
 $ cd helidon-sock-shop
-$ . update.sh
+$ . sockshop/update.sh
 ```
 
 >**Note:** Make sure that you run the update script from the same top-level directory 
@@ -264,7 +301,7 @@ the local Maven repo.
 
 ### Creating Docker Images
 
-Pre-built Docker images are already available on [DockerHub](https://hub.docker.com/orgs/helidon/repositories),
+Pre-built Docker images are already available on [DockerHub](https://hub.docker.com/orgs/helidonsockshop/repositories),
 so you can simply run `docker pull` to download them and use locally.
 
 However, if you are making changes to various service implementations and need to re-create
