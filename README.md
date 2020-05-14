@@ -91,22 +91,25 @@ Kubernetes scripts depend on Kustomize, so make sure that you have a newer versi
 that supports it (at least 1.14 or above). 
 
 If you do, you can simply run the following command from the `sockshop` directory
-and replace `BACKEND` with one of the following indicating the type of back-end you want to deploy.
+and replace the `SOCKSHOP_BACKEND` variable with one of the following indicating the type of back-end you want to deploy.
 
 * `core` - In-memory only back-end
 * `mongo` - MongoDB back-end
 * `mysql` - MySQL database back-end 
 * `redis` - Redis back-end
 
+> Note: We create a namespace called sockshop-${SOCKSHOP_BACKEND} so we can deploy multiple 
+> back-ends at a time.
+
 ```bash
-$ kubectl apply -k k8s/BACKEND 
+$ export SOCKSHOP_BACKEND=core
+
+$ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
+
+namespace/sockshop-core created
+
+$ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
 ``` 
-
-e.g.
-
-```bash
-$ kubectl apply -k k8s/core 
-```
 
 This will merge all the files under the specified 
 directory and create all Kubernetes resources defined by them, such as deployment
@@ -117,15 +120,15 @@ Port-forward the front-end UI using the following
 Mac/Linux
 
 ```bash
-$ export FRONT_END_POD=$(kubectl get pods -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}')
-$ kubectl port-forward $FRONT_END_POD 8079:8079
+$ export FRONT_END_POD=$(kubectl get pods -n sockshop-${SOCKSHOP_BACKEND} -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}')
+$ kubectl port-forward -n sockshop-${SOCKSHOP_BACKEND} $FRONT_END_POD 8079:8079
 ```
 
 Windows:
 ```command
-kubectl get pods -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
+kubectl get pods -n sockshop-%SOCKSHOP_BACKEND% -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
 SET /P FRONT_END_POD=<pod.txt
-kubectl port-forward %FRONT_END_POD% 8079:8079
+kubectl port-forward -n sockshop-%SOCKSHOP_BACKEND% %FRONT_END_POD% 8079:8079
 ```
 
 > Note: If you have installed into a namespace then add the `--namespace` option to all `kubectl` commands in these instructions.
@@ -139,7 +142,7 @@ browse order history, etc.
 Once you are finished, you can clean up the environment by executing
 
 ```bash
-$ kubectl delete -k k8s/core 
+$ kubectl delete -k k8s/core -n sockshop-${SOCKSHOP_BACKEND} 
 ```   
 
 ## Complete Application Deployment
@@ -188,24 +191,24 @@ available in your `PATH`.
     In your terminal, export (or SET for Windows) your top level domain
     and the backend you are using. 
     
-    For example for domain `sockshop.mycompany.com` and `memory` backend, use the following 
+    For example for domain `sockshop.mycompany.com` and `core` backend, use the following 
     
     ```bash
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com
     $ export SOCKSHOP_BACKEND=core                            
     
-    $ envsubst -i k8s/optional/ingress.yaml | kubectl apply -f -
+    $ envsubst -i k8s/optional/ingress.yaml | kubectl apply -n sockshop-${SOCKSHOP_BACKEND} -f -
     
-    $ kubectl get ingress  
+    $ kubectl get ingress -n sockshop-${SOCKSHOP_BACKEND}  
     
-    NAME               HOSTS                                                                                              ADDRESS           PORTS   AGE
-    mp-ingress         mp.core.sockshop.mycompany.com                                                                     XXX.XXX.XXX.XXX   80      12d
-    sockshop-ingress   memory.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
+    NAME               HOSTS                                                                                            ADDRESS           PORTS   AGE
+    mp-ingress         mp.core.sockshop.mycompany.com                                                                   XXX.XXX.XXX.XXX   80      12d
+    sockshop-ingress   core.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
     ```         
 
 1. Access the application
 
-    Access the application via the endpoint http://memory.sockshop.mycompany.com/ 
+    Access the application via the endpoint http://core.sockshop.mycompany.com/ 
 
 ### Configure Jaeger
             
@@ -222,13 +225,19 @@ available in your `PATH`.
     This is required for each back-end namespace.
     
     ```bash
-    $ kubectl create -f k8s/optional/jaeger.yaml -n namespace
+    $ kubectl create -f k8s/optional/jaeger.yaml -n sockshop-${SOCKSHOP_BACKEND}
     ```                                         
 
 1. Exercise the Application and access Jaeger
 
-    Using the application UI, place an order or two then look at the trace for the `newOrder` endpoint using the
+    Using the application UI, place an order or two then look at the trace for the `orders` endpoint using the
     Jaeger UI at http://jaeger.core.sockshop.mycompany.com/.
+    
+1.  Sample Jaeger Screens
+
+    ![Jaeger Search](./doc/images/jaeger-search.png)   
+
+    ![Jaeger Detail](./doc/images/jaeger-detail.png)     
 
 ### Access Swagger
 
@@ -237,19 +246,19 @@ available in your `PATH`.
 
 1. Cleanup the ingress
 
-    To cleanup the ingress for your deployment, issue the following ensuring you have the same
-    environment variables set from when you created the ingress. 
+    To cleanup the ingress for your deployment, execute the following command 
+    for each `SOCKSHOP_BACKEND` you previously installed. 
 
     ```bash 
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
-    $ export SOCKSHOP_BACKEND=memory                             
+    $ export SOCKSHOP_BACKEND=core                             
     
     $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f -
     ``` 
     
 1. Remove the LB (Optional)
     
-    If you wish to remove your LB, issue the following
+    If you wish to remove your LB, execute the following
     
     ```bash
     $ kubectl delete -f k8s/optional/ingress-controller.yaml
@@ -259,8 +268,12 @@ available in your `PATH`.
 
     ```bash
     $ kubectl delete -f k8s/optional/jaeger-operator.yaml 
+    ```   
     
-    $ kubectl delete -f k8s/optional/jaeger.yaml
+    For each namespace you installer Jaeger into, execute the following
+    
+    ```bash
+    $ kubectl delete -f k8s/optional/jaeger.yaml -n namespace
     ```   
 
 ## Development
