@@ -202,7 +202,7 @@ available in your `PATH`.
     $ kubectl get ingress -n sockshop-${SOCKSHOP_BACKEND}  
     
     NAME               HOSTS                                                                                            ADDRESS           PORTS   AGE
-    mp-ingress         mp.core.sockshop.mycompany.com                                                                   XXX.XXX.XXX.XXX   80      12d
+    mp-ingress         mp.core.sockshop.mycompany.com,swagger.core.sockshop.mycompany.com                               XXX.XXX.XXX.XXX   80      12d
     sockshop-ingress   core.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
     ```         
 
@@ -230,7 +230,8 @@ available in your `PATH`.
 
 1. Exercise the Application and access Jaeger
 
-    Using the application UI, place an order or two then look at the trace for the `orders` endpoint using the
+    Using the application UI, place an order or two then look at the trace for the `orders` 
+    service using the
     Jaeger UI at http://jaeger.core.sockshop.mycompany.com/.
     
 1.  Sample Jaeger Screens
@@ -241,6 +242,15 @@ available in your `PATH`.
 
 ### Access Swagger
 
+1. Configured Swagger
+
+    This is required for each back-end namespace.
+    
+    ```bash
+    $ kubectl create -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND}
+    ```    
+   
+   Access the Swagger UI at http://swagger.core.sockshop.mycompany.com                                    
 
 ### Cleanup
 
@@ -275,6 +285,15 @@ available in your `PATH`.
     ```bash
     $ kubectl delete -f k8s/optional/jaeger.yaml -n namespace
     ```   
+
+1. Remove Swagger
+
+    For each namespace you installer Swagger into, execute the following
+
+    ```bash
+   $ kubectl delete -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND} 
+    ```
+    
 
 ## Development
  

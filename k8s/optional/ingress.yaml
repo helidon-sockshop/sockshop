@@ -68,13 +68,16 @@ metadata:
   name: mp-ingress
 spec:
   rules:
-  - host: mp.${SOCKSHOP_BACKEND:=core}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
+  - host: swagger.${SOCKSHOP_BACKEND:=core}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
     http:
       paths:
-        - path: /swagger(/|$)(.*)
+        - path: /
           backend:
             serviceName: swagger
             servicePort: 80
+  - host: mp.${SOCKSHOP_BACKEND:=core}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
+    http:
+      paths:
         - path: /carts(/|$)(.*)
           backend:
             serviceName: carts
