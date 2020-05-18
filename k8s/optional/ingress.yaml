@@ -64,20 +64,17 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /$$2
   name: mp-ingress
 spec:
   rules:
-  - host: swagger.${SOCKSHOP_BACKEND:=core}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
-    http:
-      paths:
-        - path: /
-          backend:
-            serviceName: swagger
-            servicePort: 80
   - host: mp.${SOCKSHOP_BACKEND:=core}.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
     http:
       paths:
+        - path: /swagger(/|$)(.*)
+          backend:
+            serviceName: swagger
+            servicePort: 80
         - path: /carts(/|$)(.*)
           backend:
             serviceName: carts

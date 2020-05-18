@@ -91,9 +91,11 @@ Kubernetes scripts depend on Kustomize, so make sure that you have a newer versi
 that supports it (at least 1.14 or above). 
 
 If you do, you can simply run the following command from the `sockshop` directory
-and replace the `SOCKSHOP_BACKEND` variable with one of the following indicating the type of back-end you want to deploy.
+and and set the SOCKSHOP_BACKEND variable to one of the following values, 
+indicating the type of back-end you want to deploy.
 
 * `core` - In-memory only back-end
+* `coherence` - Coherence back-end
 * `mongo` - MongoDB back-end
 * `mysql` - MySQL database back-end 
 * `redis` - Redis back-end
@@ -125,7 +127,7 @@ $ kubectl port-forward -n sockshop-${SOCKSHOP_BACKEND} $FRONT_END_POD 8079:8079
 ```
 
 Windows:
-```command
+```bash
 kubectl get pods -n sockshop-%SOCKSHOP_BACKEND% -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
 SET /P FRONT_END_POD=<pod.txt
 kubectl port-forward -n sockshop-%SOCKSHOP_BACKEND% %FRONT_END_POD% 8079:8079
@@ -139,10 +141,10 @@ You should then be able to browse product catalog, add products to shopping cart
 existing test user (username: `user`, password: `pass`) or register as a new user, place an order,
 browse order history, etc.
 
-Once you are finished, you can clean up the environment by executing
+Once you are finished, you can clean up the environment by executing the following:
 
 ```bash
-$ kubectl delete -k k8s/core -n sockshop-${SOCKSHOP_BACKEND} 
+$ kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
 ```   
 
 ## Complete Application Deployment
@@ -161,7 +163,10 @@ You must download and install `envsubst` for your platform from
 [https://github.com/a8m/envsubst](https://github.com/a8m/envsubst) and make it
 available in your `PATH`.
 
-### Expose Application via a Load Balancer                               
+### Expose Application via a Load Balancer 
+
+> Note: This is assuming you have deployed one of the back-ends via the instructions in
+> the previous section.                              
 
 1. Create the Load Balancer
 
@@ -182,7 +187,7 @@ available in your `PATH`.
 
     For example if your top level domain is `mycompany.com` then you
     should create a single wildcard DNS entry `*.sockshop.mycompany.com` to 
-    point to your external LB IP address.
+    point to your external load balancer IP address.
     
 1. Create the ingress
 
@@ -202,7 +207,7 @@ available in your `PATH`.
     $ kubectl get ingress -n sockshop-${SOCKSHOP_BACKEND}  
     
     NAME               HOSTS                                                                                            ADDRESS           PORTS   AGE
-    mp-ingress         mp.core.sockshop.mycompany.com,swagger.core.sockshop.mycompany.com                               XXX.XXX.XXX.XXX   80      12d
+    mp-ingress         mp.core.sockshop.mycompany.com                                                                   XXX.XXX.XXX.XXX   80      12d
     sockshop-ingress   core.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
     ```         
 
@@ -210,7 +215,7 @@ available in your `PATH`.
 
     Access the application via the endpoint http://core.sockshop.mycompany.com/ 
 
-### Configure Jaeger
+### Install the Jaeger Operator
             
 1. Install the Jaeger operator
  
@@ -220,7 +225,7 @@ available in your `PATH`.
     $ kubectl create -f k8s/optional/jaeger-operator.yaml 
     ```
 
-1. Configured Jaeger
+1. Deploy All-in-One Jaeger Instance
 
     This is required for each back-end namespace.
     
@@ -230,19 +235,17 @@ available in your `PATH`.
 
 1. Exercise the Application and access Jaeger
 
-    Using the application UI, place an order or two then look at the trace for the `orders` 
-    service using the
-    Jaeger UI at http://jaeger.core.sockshop.mycompany.com/.
+    Cessing the Jaeger UI at http://jaeger.core.sockshop.mycompany.com/,
+    you should see the trace information similar to the images below, allowing you 
+    to see how long each individual operation in the call tree took.
     
-1.  Sample Jaeger Screens
-
     ![Jaeger Search](./doc/images/jaeger-search.png)   
 
     ![Jaeger Detail](./doc/images/jaeger-detail.png)     
 
 ### Access Swagger
 
-1. Configured Swagger
+1. Deploy Swagger UI
 
     This is required for each back-end namespace.
     
@@ -250,25 +253,43 @@ available in your `PATH`.
     $ kubectl create -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND}
     ```    
    
-   Access the Swagger UI at http://swagger.core.sockshop.mycompany.com                                    
+   Access the Swagger UI at http://mp.core.sockshop.mycompany.com/swagger/.
+   
+   Enter /carts/openapi into the Explore field at the top of the screen and click on Explore button. 
+   You should see the screen similar to the following, showing you all the endpoints for the Carts 
+   service (and their payloads), and allowing you to make API requests to it directly from your browser.
+   
+   ![Swagger UI](./doc/images/swagger.png)                                       
 
 ### Cleanup
 
 1. Cleanup the ingress
 
-    To cleanup the ingress for your deployment, execute the following command 
-    for each `SOCKSHOP_BACKEND` you previously installed. 
+    To cleanup the ingress for your deployment, execute the following: 
+    for each `SOCKSHOP_BACKEND` you previously installed: 
 
     ```bash 
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
     $ export SOCKSHOP_BACKEND=core                             
     
-    $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f -
-    ``` 
+    $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f - -n sockshop-${SOCKSHOP_BACKEND}
+    ```   
+   
+1. Remove the deployed services
+
+    To cleanup the deployed services, execute the following
+    for each `SOCKSHOP_BACKEND` you previously installed: 
+   
+    ```bash   
+    $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
+    $ export SOCKSHOP_BACKEND=core       
+   
+    $kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
+    ```  
     
-1. Remove the LB (Optional)
+1. Remove the Load Balancer 
     
-    If you wish to remove your LB, execute the following
+    If you wish to remove your load balancer, execute the following:
     
     ```bash
     $ kubectl delete -f k8s/optional/ingress-controller.yaml
@@ -280,20 +301,19 @@ available in your `PATH`.
     $ kubectl delete -f k8s/optional/jaeger-operator.yaml 
     ```   
     
-    For each namespace you installer Jaeger into, execute the following
+    For each namespace you installer Jaeger into, execute the following:
     
     ```bash
-    $ kubectl delete -f k8s/optional/jaeger.yaml -n namespace
+    $ kubectl delete -f k8s/optional/jaeger.yaml -n sockshop-${SOCKSHOP_BACKEND}
     ```   
 
 1. Remove Swagger
 
-    For each namespace you installer Swagger into, execute the following
+    For each namespace you installer Swagger into, execute the following:
 
     ```bash
    $ kubectl delete -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND} 
     ```
-    
 
 ## Development
  
@@ -340,7 +360,7 @@ However, if you are making changes to various service implementations and need t
 Docker images, you can easily do that in several different ways.
 
 If you only want to build Docker images locally, make sure that you have Docker Daemon
-running and execute the following command: 
+running and execute the following: 
 
 ```bash
 $ mvn package -Pdocker -DskipTests
