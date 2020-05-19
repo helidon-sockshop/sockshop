@@ -217,9 +217,10 @@ available in your `PATH`.
 
 ### Install the Jaeger Operator
             
-1. Install the Jaeger operator
+1. Install the Jaeger Operator
  
-    This is only required once regardless of the number of backends you want to deploy.
+    The command below will create observability namespace and install Jaeger Operator into it. 
+    You only need to do this once, regardless of the number of backends you want to deploy.
             
     ```bash
     $ kubectl create -f k8s/optional/jaeger-operator.yaml 
