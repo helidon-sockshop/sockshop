@@ -34,7 +34,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
       - name: payment-db
-        image: mysql:8.0.19
+        image: mysql:8.0.20
         env:
         - name: MYSQL_ALLOW_EMPTY_PASSWORD
           value: "true"
