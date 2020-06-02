@@ -192,9 +192,11 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
 1. Create Config Maps
 
     ```bash
-    $ kubectl -n monitoring create configmap sockshop-grafana-dashboards --from-file=k8s/optional/grafana/
-    
-    $ kubectl -n monitoring label configmap sockshop-grafana-dashboards grafana_dashboard=1
+    $ kubectl -n monitoring create configmap sockshop-grafana-dashboards --from-file=k8s/optional/grafana-dashboards/
+             
+    $ kubectl -n monitoring label configmap sockshop-grafana-dashboards grafana_dashboard=1  
+   
+    $ kubectl -n monitoring create -f k8s/optional/grafana-datasource-config.yaml
     ```     
    
 1. Install Prometheus Operator
@@ -203,10 +205,10 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     > then set `--set prometheusOperator.createCustomResource=true`.
 
     ```bash
-    $ helm install --namespace monitoring --version 8.13.7 --wait \
-		--set grafana.enabled=true --name prometheus \
+    $ helm install --namespace monitoring --version 8.13.7 \
+        --set grafana.enabled=true --name prometheus \
         --set prometheusOperator.createCustomResource=false \
-		--values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
+        --values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
     ```   
 
 ### Expose Application via a Load Balancer 
@@ -234,7 +236,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     For example if your top level domain is `mycompany.com` then you
     should create a single wildcard DNS entry `*.sockshop.mycompany.com` to 
     point to your external load balancer IP address.
-    
+     
 1. Create the ingress
 
     Each time you use a different back-end you will need to create a new ingress.
@@ -255,7 +257,21 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     NAME               HOSTS                                                                                            ADDRESS           PORTS   AGE
     mp-ingress         mp.core.sockshop.mycompany.com                                                                   XXX.XXX.XXX.XXX   80      12d
     sockshop-ingress   core.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
-    ```         
+    ```   
+   
+1. Create the ingress for Grafana
+
+    Ensuring you have the `SOCKSHOP_DOMAIN` environment variable set and issue the following:
+    
+    ```bash
+    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl apply -n monitoring -f - 
+   
+    $ kubectl get ingress -n monitoring
+    ```     
+    
+    The following URLs can be used to access Grafana and Prometheus:
+    * http://grafana.sockshop.mycompany.com/ - username: `admin`, initial password `prom-operator`
+    * http://prometheus.sockshop.mycompany.com/  
 
 1. Access the application
 
@@ -320,7 +336,13 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     $ export SOCKSHOP_BACKEND=core                             
     
     $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f - -n sockshop-${SOCKSHOP_BACKEND}
-    ```   
+    ```       
+   
+    If you installed Prometheus Operator, execute the following:
+    
+    ```bash
+    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl delete -n monitoring -f - 
+    ```
    
 1. Remove the deployed services
 
@@ -331,7 +353,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
     $ export SOCKSHOP_BACKEND=core       
    
-    $kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
+    $ kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
     ```  
     
 1. Remove the Load Balancer 
@@ -364,13 +386,31 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
    
 1. Remove Prometheus and Grafana 
 
-   To remove the Prometheus Operator, execute the following: 
+   To remove the Prometheus Operator, execute the following:
+    
     ```bash
-   $ helm delete prometheus --purge 
+   $ helm delete prometheus --purge     
    
-   $ kubectl delete -f k8s/optional/prometheus-rbac.yaml
-   ```  
-
+   $ kubectl -n monitoring delete configmap sockshop-grafana-dashboards   
+   
+   $ kubectl -n monitoring delete -f k8s/optional/grafana-datasource-config.yaml
+   
+   $ kubectl delete -f k8s/optional/prometheus-rbac.yaml 
+   ```           
+   
+   > Note: You can optionally delete the Prometheus Operator Custom Resource Definitions
+   > (CRD's) if you are not going to install Prometheus Operator again. 
+   
+   ```bash
+   $ kubectl delete crd alertmanagers.monitoring.coreos.com 
+   $ kubectl delete crd podmonitors.monitoring.coreos.com
+   $ kubectl delete crd prometheuses.monitoring.coreos.com
+   $ kubectl delete crd prometheusrules.monitoring.coreos.com 
+   $ kubectl delete crd prometheusrules.monitoring.coreos.com 
+   $ kubectl delete crd servicemonitors.monitoring.coreos.com 
+   $ kubectl delete crd thanosrulers.monitoring.coreos.com 
+   ```                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                        
 ## Development
  
 If you want to modify the demo, you will need to check out the code for the project, build it 
