@@ -204,7 +204,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
 
     ```bash
     $ helm install --namespace monitoring --version 8.13.7 --wait \
-		--set grafana.enabled=true --name prometheus \       
+		--set grafana.enabled=true --name prometheus \
         --set prometheusOperator.createCustomResource=false \
 		--values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
     ```   
