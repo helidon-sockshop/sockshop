@@ -367,8 +367,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
    
     ```bash   
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
-    $ export SOCKSHOP_BACKEND=core       
-   
+    $ export SOCKSHOP_BACKEND=core
     $ kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
     ```  
     
@@ -411,17 +410,15 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
 
    To remove the Prometheus Operator, execute the following:
     
-    ```bash   
-   $ kubectl delete -n monitoring -f k8s/optional/prometheus-service-monitor.yaml 
+    ```bash
+    $ helm delete prometheus --purge     
    
-   $ helm delete prometheus --purge     
+    $ kubectl -n monitoring delete configmap sockshop-grafana-dashboards   
    
-   $ kubectl -n monitoring delete configmap sockshop-grafana-dashboards   
+    $ kubectl -n monitoring delete -f k8s/optional/grafana-datasource-config.yaml
    
-   $ kubectl -n monitoring delete -f k8s/optional/grafana-datasource-config.yaml
-   
-   $ kubectl delete -f k8s/optional/prometheus-rbac.yaml 
-   ```           
+    $ kubectl delete -f k8s/optional/prometheus-rbac.yaml 
+    ```           
    
    > Note: You can optionally delete the Prometheus Operator Custom Resource Definitions
    > (CRD's) if you are not going to install Prometheus Operator again. 
