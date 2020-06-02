@@ -20,6 +20,7 @@ and showcase its features and best practices.
 * [Quick Start](#quick-start)
 * [Complete Application Deployment](#complete-application-deployment)
   * [Pre-Requisites](#pre-requisites)
+  * [Install Prometheus and Grafana](#install-prometheus-and-grafana)
   * [Expose Application via a Load Balancer](#expose-application-via-a-load-balancer)
   * [Configure Jaeger](#configure-jaeger)
   * [Access Swagger](#access-swagger)
@@ -159,9 +160,54 @@ which is not necessary), and performing a few additional steps.
 
 ### Pre-Requisites
 
-You must download and install `envsubst` for your platform from 
-[https://github.com/a8m/envsubst](https://github.com/a8m/envsubst) and make it
-available in your `PATH`.
+1. Install `envsubst` 
+
+    You must download and install `envsubst` for your platform from 
+    [https://github.com/a8m/envsubst](https://github.com/a8m/envsubst) and make it
+    available in your `PATH`.
+
+1. Install `helm`
+
+    You must have at least version `v2.14.3` of `helm`. See [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
+    for information on installing `helm` for your platform.
+
+### Install Prometheus and Grafana
+
+The following will install [Prometheus Operator](https://github.com/coreos/prometheus-operator/) into the 
+`monitoring` namespace using `helm`.
+
+1. Add `helm` repository
+
+    ```bash
+    $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/   
+    $ helm repo update
+    ```   
+   
+1. Create Prometheus pre-requisites
+
+    ```bash
+    $ kubectl apply -f k8s/optional/prometheus-rbac.yaml  
+    ```                            
+   
+1. Create Config Maps
+
+    ```bash
+    $ kubectl -n monitoring create configmap sockshop-grafana-dashboards --from-file=k8s/optional/grafana/
+    
+    $ kubectl -n monitoring label configmap sockshop-grafana-dashboards grafana_dashboard=1
+    ```     
+   
+1. Install Prometheus Operator
+
+    > Note: If you have never installed Prometheus Operator before on this Kuberenetes Cluster
+    > then set `--set prometheusOperator.createCustomResource=true`.
+
+    ```bash
+    $ helm install --namespace monitoring --version 8.13.7 --wait \
+		--set grafana.enabled=true --name prometheus \       
+        --set prometheusOperator.createCustomResource=false \
+		--values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
+    ```   
 
 ### Expose Application via a Load Balancer 
 
@@ -314,7 +360,16 @@ available in your `PATH`.
 
     ```bash
    $ kubectl delete -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND} 
-    ```
+    ```  
+   
+1. Remove Prometheus and Grafana 
+
+   To remove the Prometheus Operator, execute the following: 
+    ```bash
+   $ helm delete prometheus --purge 
+   
+   $ kubectl delete -f k8s/optional/prometheus-rbac.yaml
+   ```  
 
 ## Development
  
