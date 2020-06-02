@@ -212,13 +212,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
         --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
         --set prometheusOperator.createCustomResource=true \
         --values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
-    ```   
-
-1. Install a Service Monitor
-
-    ```bash
-   $ kubectl create -n monitoring -f k8s/optional/prometheus-service-monitor.yaml 
-   ```
+    ```
 
 ### Expose Application via a Load Balancer 
 
@@ -268,7 +262,17 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     sockshop-ingress   core.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
     ```   
    
-1. Create the ingress for Grafana
+1. Install a Service Monitor
+
+    Each time you use a different back-end you will need to create a new service monitor.
+    
+    As for the ingress above, ensure you have set the `SOCKSHOP_BACKEND` environment variable. 
+    
+    ```bash
+   $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl create -n monitoring -f -
+   ```   
+   
+1. Create the ingress for Grafana and Prometheus
 
     Ensuring you have the `SOCKSHOP_DOMAIN` environment variable set and issue the following:
     
@@ -397,6 +401,13 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     ```  
    
 1. Remove Prometheus and Grafana 
+
+    To cleanup the service monitors, execute the following
+    for each `SOCKSHOP_BACKEND` you previously installed: 
+   
+    ```bash
+    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl delete -n monitoring -f -
+    ```
 
    To remove the Prometheus Operator, execute the following:
     
