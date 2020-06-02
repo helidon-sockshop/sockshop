@@ -196,20 +196,29 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
              
     $ kubectl -n monitoring label configmap sockshop-grafana-dashboards grafana_dashboard=1  
    
-    $ kubectl -n monitoring create -f k8s/optional/grafana-datasource-config.yaml
+    $ kubectl -n monitoring create -f k8s/optional/grafana-datasource-config.yaml  
+   
+    $ kubectl -n monitoring label configmap sockshop-grafana-datasource grafana_datasource=1  
     ```     
    
 1. Install Prometheus Operator
 
-    > Note: If you have never installed Prometheus Operator before on this Kuberenetes Cluster
-    > then set `--set prometheusOperator.createCustomResource=true`.
+    > Note: If you have already installed Prometheus Operator before on this Kuberenetes Cluster
+    > then set `--set prometheusOperator.createCustomResource=false`.
 
     ```bash
     $ helm install --namespace monitoring --version 8.13.7 \
         --set grafana.enabled=true --name prometheus \
-        --set prometheusOperator.createCustomResource=false \
+        --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
+        --set prometheusOperator.createCustomResource=true \
         --values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
     ```   
+
+1. Install a Service Monitor
+
+    ```bash
+   $ kubectl create -n monitoring -f k8s/optional/prometheus-service-monitor.yaml 
+   ```
 
 ### Expose Application via a Load Balancer 
 
@@ -266,7 +275,10 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     ```bash
     $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl apply -n monitoring -f - 
    
-    $ kubectl get ingress -n monitoring
+    $ kubectl get ingress -n monitoring                                         
+   
+    NAME              HOSTS                                                                  ADDRESS          PORTS   AGE
+    grafana-ingress   grafana.sockshop.mycompany.com,prometheus.sockshop.mycompany.com       XXX.YYY.XXX.YYY  80      12s
     ```     
     
     The following URLs can be used to access Grafana and Prometheus:
@@ -388,7 +400,9 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
 
    To remove the Prometheus Operator, execute the following:
     
-    ```bash
+    ```bash   
+   $ kubectl delete -n monitoring -f k8s/optional/prometheus-service-monitor.yaml 
+   
    $ helm delete prometheus --purge     
    
    $ kubectl -n monitoring delete configmap sockshop-grafana-dashboards   
@@ -409,7 +423,12 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
    $ kubectl delete crd prometheusrules.monitoring.coreos.com 
    $ kubectl delete crd servicemonitors.monitoring.coreos.com 
    $ kubectl delete crd thanosrulers.monitoring.coreos.com 
-   ```                                                                                                                                                                                                                                     
+   ```   
+   
+   A shorthand way of doing this if you are running Linux/Mac is:
+   ```bash
+   $ kubectl get crds -n monitoring | grep monitoring.coreos.com | awk '{print $1}' | xargs kubectl delete crd
+   ```                                                                                                                                                                                                                                  
                                                                                                                                                                                                                                         
 ## Development
  

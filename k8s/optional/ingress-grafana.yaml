@@ -30,5 +30,5 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: prometheus-prometheus-oper-prometheus
+          serviceName: prometheus-operated
           servicePort: 9090
