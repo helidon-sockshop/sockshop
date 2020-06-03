@@ -233,7 +233,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     > then set `--set prometheusOperator.createCustomResource=false`.
 
     ```bash
-    $ helm install --namespace monitoring --version 8.13.7 \
+    $ helm install --namespace monitoring --version 8.13.9 \
         --set grafana.enabled=true --name prometheus \
         --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
         --set prometheusOperator.createCustomResource=true \
@@ -370,7 +370,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
 
 ### Cleanup
 
-1. Cleanup the ingress
+1. Cleanup the ingress for applications
 
     To cleanup the ingress for your deployment, execute the following: 
     for each `SOCKSHOP_BACKEND` you previously installed: 
@@ -381,6 +381,8 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     
     $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f - -n sockshop-${SOCKSHOP_BACKEND}
     ```       
+   
+1. Cleanup the ingress for Grafana and Prometheus
    
     If you installed Prometheus Operator, execute the following:
     
