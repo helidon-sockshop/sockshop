@@ -137,14 +137,14 @@ Choose one of the following options:
 
 * **Installing a Coherence Back-end**
    
-    You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/) 
-    for information on installing `helm` for your platform.
+    > Note: You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/) 
+    > for information on installing `helm` for your platform.
     
     ```bash
     $ export SOCKSHOP_BACKEND=coherence
     
     $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
-    namespace/sockshop-core created  
+    namespace/sockshop-coherence created  
   
     $ helm install coherence-unstable/coherence-operator --version 3.0.0-2005301547 \
            --namespace sockshop-${SOCKSHOP_BACKEND} --name coherence-operator
