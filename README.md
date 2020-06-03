@@ -87,14 +87,14 @@ all project repositories at once.
 ## Pre-Requisites
 
 If you are going to install a `coherence` back-end or support for Prometheus and Grafana you
-will need the following:
+will need to carry out the following:
 
 1. Install `helm`
 
     You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/)
     for information on installing `helm` for your platform.
 
-1. Add `helm` repositories
+1. Add the following `helm` repositories
 
     ```bash
     $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
