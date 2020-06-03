@@ -136,10 +136,7 @@ Choose one of the following options:
     ``` 
 
 * **Installing a Coherence Back-end**
-   
-    > Note: You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/) 
-    > for information on installing `helm` for your platform.
-    
+
     ```bash
     $ export SOCKSHOP_BACKEND=coherence
     
@@ -160,14 +157,15 @@ and service for each microservice.
 
 Port-forward the front-end UI using the following
 
-Mac/Linux
+**Mac/Linux**
 
 ```bash
 $ export FRONT_END_POD=$(kubectl get pods -n sockshop-${SOCKSHOP_BACKEND} -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}')
 $ kubectl port-forward -n sockshop-${SOCKSHOP_BACKEND} $FRONT_END_POD 8079:8079
 ```
 
-Windows:
+**Windows**
+
 ```bash
 kubectl get pods -n sockshop-%SOCKSHOP_BACKEND% -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
 SET /P FRONT_END_POD=<pod.txt
@@ -311,8 +309,8 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
    
     $ kubectl get ingress -n monitoring                                         
    
-    NAME              HOSTS                                                                  ADDRESS          PORTS   AGE
-    grafana-ingress   grafana.sockshop.mycompany.com,prometheus.sockshop.mycompany.com       XXX.YYY.XXX.YYY  80      12s
+    NAME              HOSTS                                                             ADDRESS          PORTS   AGE
+    grafana-ingress   grafana.sockshop.mycompany.com,prometheus.sockshop.mycompany.com  XXX.YYY.XXX.YYY  80      12s
     ```     
     
     The following URLs can be used to access Grafana and Prometheus:
@@ -466,7 +464,15 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
    A shorthand way of doing this if you are running Linux/Mac is:
    ```bash
    $ kubectl get crds -n monitoring | grep monitoring.coreos.com | awk '{print $1}' | xargs kubectl delete crd
-   ```                                                                                                                                                                                                                                  
+   ``` 
+   
+1. Remove the Coherence Operator
+
+    If you installed a `coherence` back-end then you must also un-install using the following:
+    
+    ```bash
+    $ helm delete coherence-operator --purge
+    ```                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                         
 ## Development
  
