@@ -22,6 +22,9 @@ spec:
   cluster: sockshop
   role: shipping
   replicas: 1
+  coherence:
+    metrics:
+      enabled: true
   image: helidonsockshop/shipping-coherence:latest
   imagePullPolicy: Always
   env:
@@ -43,6 +46,9 @@ spec:
         name: shipping
     - name: http
       port: 7001
+      serviceMonitor:
+        enabled: true
+    - name: metrics
       serviceMonitor:
         enabled: true
   resources:

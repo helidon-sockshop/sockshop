@@ -9,9 +9,10 @@ data:
         "apiVersion": 1,
         "datasources": [
             {
-               "access":"proxy",
+                "access":"proxy",
                 "editable": true,
                 "name": "Prometheus",
+                "default": true,
                 "orgId": 1,
                 "type": "prometheus",
                 "url": "http://prometheus-operated:9090/",

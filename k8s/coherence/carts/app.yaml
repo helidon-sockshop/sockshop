@@ -22,6 +22,11 @@ spec:
   cluster: sockshop
   role: carts
   replicas: 1
+  coherence:
+    logLevel: 9
+    metrics:
+      enabled: true
+      port: 9612
   image: helidonsockshop/carts-coherence:latest
   imagePullPolicy: Always
   env:
@@ -42,6 +47,9 @@ spec:
       service:
         name: carts
         port: 80
+      serviceMonitor:
+        enabled: true
+    - name: metrics
       serviceMonitor:
         enabled: true
   resources:

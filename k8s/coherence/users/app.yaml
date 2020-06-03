@@ -22,6 +22,9 @@ spec:
   cluster: sockshop
   role: users
   replicas: 1
+  coherence:
+    metrics:
+      enabled: true
   image: helidonsockshop/users-coherence:latest
   imagePullPolicy: Always
   env:
@@ -42,6 +45,9 @@ spec:
       service:
         name: user  # for compatibility with the existing front-end implementation
         port: 80
+      serviceMonitor:
+        enabled: true
+    - name: metrics
       serviceMonitor:
         enabled: true
   resources:

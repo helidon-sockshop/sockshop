@@ -17,9 +17,10 @@ and showcase its features and best practices.
 
 * [Architecture](#architecture)
 * [Project Structure](#project-structure)
+* [Pre-Requisites](#pre-requisites)
 * [Quick Start](#quick-start)
 * [Complete Application Deployment](#complete-application-deployment)
-  * [Pre-Requisites](#pre-requisites)
+  * [Additional Pre-Requisites](#additional-pre-requisites)
   * [Install Prometheus and Grafana](#install-prometheus-and-grafana)
   * [Expose Application via a Load Balancer](#expose-application-via-a-load-balancer)
   * [Configure Jaeger](#configure-jaeger)
@@ -83,13 +84,31 @@ top-level POM file which allows you to easily build the whole project and import
 into your favorite IDE, and a _bash_ script that makes it easy to checkout and update 
 all project repositories at once.
 
+## Pre-Requisites
+
+If you are going to install a `coherence` back-end or support for Prometheus and Grafana you
+will need the following:
+
+1. Install `helm`
+
+    You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/)
+    for information on installing `helm` for your platform.
+
+1. Add `helm` repositories
+
+    ```bash
+    $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+    $ helm repo add coherence-unstable https://oracle.github.io/coherence-operator/charts-unstable 
+    $ helm repo update
+    ```   
+
 ## Quick Start
 
+Kubernetes scripts depend on Kustomize, so make sure that you have a newer 
+version of `kubectl` that supports it (at least 1.14 or above).
+   
 The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidonsockshop/repositories)
 and Kubernetes deployment scripts from this repo. 
-
-Kubernetes scripts depend on Kustomize, so make sure that you have a newer version of `kubectl`
-that supports it (at least 1.14 or above). 
 
 If you do, you can simply run the following command from the `sockshop` directory
 and and set the SOCKSHOP_BACKEND variable to one of the following values, 
@@ -101,22 +120,43 @@ indicating the type of back-end you want to deploy.
 * `mysql` - MySQL database back-end 
 * `redis` - Redis back-end
 
-> Note: We create a namespace called sockshop-${SOCKSHOP_BACKEND} so we can deploy multiple 
-> back-ends at a time.
+We create a namespace called sockshop-${SOCKSHOP_BACKEND} so we can deploy multiple 
+back-ends at a time.
 
-```bash
-$ export SOCKSHOP_BACKEND=core
+Choose one of the following options:
+* **Installing non-Coherence Back-end**
 
-$ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
+    ```bash
+    $ export SOCKSHOP_BACKEND=core
+    
+    $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
+    namespace/sockshop-core created
+    
+    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
+    ``` 
 
-namespace/sockshop-core created
+* **Installing a Coherence Back-end**
+   
+    You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/) 
+    for information on installing `helm` for your platform.
+    
+    ```bash
+    $ export SOCKSHOP_BACKEND=coherence
+    
+    $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
+    namespace/sockshop-core created  
+  
+    $ helm install coherence-unstable/coherence-operator --version 3.0.0-2005301547 \
+           --namespace sockshop-${SOCKSHOP_BACKEND} --name coherence-operator
+    
+    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
+    ``` 
 
-$ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
-``` 
-
+    
 This will merge all the files under the specified 
 directory and create all Kubernetes resources defined by them, such as deployment
 and service for each microservice.
+
 
 Port-forward the front-end UI using the following
 
@@ -158,7 +198,7 @@ To do all of the above, you need to deploy the services into a managed Kubernete
 in the cloud, by following the same set of steps described above (except for port forwarding, 
 which is not necessary), and performing a few additional steps.
 
-### Pre-Requisites
+### Additional Pre-Requisites 
 
 1. Install `envsubst` 
 
@@ -166,22 +206,10 @@ which is not necessary), and performing a few additional steps.
     [https://github.com/a8m/envsubst](https://github.com/a8m/envsubst) and make it
     available in your `PATH`.
 
-1. Install `helm`
-
-    You must have at least version `v2.14.3` of `helm`. See [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
-    for information on installing `helm` for your platform.
-
 ### Install Prometheus and Grafana
 
 The following will install [Prometheus Operator](https://github.com/coreos/prometheus-operator/) into the 
 `monitoring` namespace using `helm`.
-
-1. Add `helm` repository
-
-    ```bash
-    $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/   
-    $ helm repo update
-    ```   
    
 1. Create Prometheus pre-requisites
 
@@ -262,16 +290,18 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     sockshop-ingress   core.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
     ```   
    
-1. Install a Service Monitor
+1. Install a Service Monitor 
 
+    > Note: This is only required for non `coherence` backends.
+                                  
     Each time you use a different back-end you will need to create a new service monitor.
     
     As for the ingress above, ensure you have set the `SOCKSHOP_BACKEND` environment variable. 
-    
+  
     ```bash
-   $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl create -n monitoring -f -
-   ```   
-   
+    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl create -n monitoring -f -
+    ```      
+    
 1. Create the ingress for Grafana and Prometheus
 
     Ensuring you have the `SOCKSHOP_DOMAIN` environment variable set and issue the following:
