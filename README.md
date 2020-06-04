@@ -23,7 +23,7 @@ and showcase its features and best practices.
   * [Additional Pre-Requisites](#additional-pre-requisites)
   * [Install Prometheus and Grafana](#install-prometheus-and-grafana)
   * [Expose Application via a Load Balancer](#expose-application-via-a-load-balancer)
-  * [Configure Jaeger](#configure-jaeger)
+  * [Install the Jaeger Operator](#install-the-jaeger-operator)
   * [Access Swagger](#access-swagger)
   * [Cleanup](#cleanup)  
 * [Development](#development)
@@ -328,7 +328,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     You only need to do this once, regardless of the number of backends you want to deploy.
             
     ```bash
-    $ kubectl create -f k8s/optional/jaeger-operator.yaml 
+    $ kubectl apply -f k8s/optional/jaeger-operator.yaml 
     ```
 
 1. Deploy All-in-One Jaeger Instance
