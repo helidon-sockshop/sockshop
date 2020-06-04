@@ -98,7 +98,7 @@ will need to carry out the following:
 
     ```bash
     $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-    $ helm repo add coherence-unstable https://oracle.github.io/coherence-operator/charts-unstable 
+    $ helm repo add coherence https://oracle.github.io/coherence-operator/charts
     $ helm repo update
     ```   
 
@@ -143,7 +143,7 @@ Choose one of the following options:
     $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
     namespace/sockshop-coherence created  
   
-    $ helm install coherence-unstable/coherence-operator --version 3.0.0-2006030537 \
+    $ helm install coherence/coherence-operator --version 3.0.0 \
            --namespace sockshop-${SOCKSHOP_BACKEND} --name coherence-operator
     
     $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
@@ -324,7 +324,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
             
 1. Install the Jaeger Operator
  
-    The command below will create observability namespace and install Jaeger Operator into it. 
+    The command below will create `monitoring` namespace and install Jaeger Operator into it. 
     You only need to do this once, regardless of the number of backends you want to deploy.
             
     ```bash
