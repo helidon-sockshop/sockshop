@@ -18,6 +18,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: shipping
+  labels:
+    component: sockshop
 spec:
   template:
     spec:

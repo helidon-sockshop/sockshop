@@ -20,6 +20,7 @@ metadata:
   name: carts-db
   labels:
     name: carts-db
+    component: sockshop       
 spec:
   replicas: 1
   selector:

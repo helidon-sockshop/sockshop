@@ -20,6 +20,7 @@ metadata:
   name: shipping-db
   labels:
     name: shipping-db
+    component: sockshop
 spec:
   replicas: 1
   selector:

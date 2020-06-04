@@ -20,6 +20,7 @@ metadata:
   name: payment-db
   labels:
     name: payment-db
+    component: sockshop   
 spec:
   replicas: 1
   selector:

@@ -20,6 +20,7 @@ metadata:
   name: orders-db
   labels:
     name: orders-db
+    component: sockshop       
 spec:
   replicas: 1
   selector:
