@@ -12,6 +12,7 @@ data:
                 "access":"proxy",
                 "editable": true,
                 "name": "Prometheus",
+                "isDefault": true,
                 "orgId": 1,
                 "type": "prometheus",
                 "url": "http://prometheus-operated:9090/",

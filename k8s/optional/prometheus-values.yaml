@@ -20,5 +20,5 @@ grafana:
       label: grafana_dashboard
     datasources:
       enabled: true
-      defaultDatasourceEnabled: true
+      defaultDatasourceEnabled: false
       label: grafana_datasource

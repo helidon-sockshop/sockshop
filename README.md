@@ -143,7 +143,7 @@ Choose one of the following options:
     $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
     namespace/sockshop-coherence created  
   
-    $ helm install coherence-unstable/coherence-operator --version 3.0.0-2005301547 \
+    $ helm install coherence-unstable/coherence-operator --version 3.0.0-2006030537 \
            --namespace sockshop-${SOCKSHOP_BACKEND} --name coherence-operator
     
     $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
@@ -235,7 +235,6 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     ```bash
     $ helm install --namespace monitoring --version 8.13.9 \
         --set grafana.enabled=true --name prometheus \
-        --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
         --set prometheusOperator.createCustomResource=true \
         --values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
     ```

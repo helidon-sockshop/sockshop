@@ -22,9 +22,6 @@ spec:
   cluster: sockshop
   role: orders
   replicas: 1
-  coherence:
-    metrics:
-      enabled: true
   image: helidonsockshop/orders-coherence:latest
   imagePullPolicy: Always
   env:
@@ -45,9 +42,6 @@ spec:
       service:
         name: orders
         port: 80
-      serviceMonitor:
-        enabled: true
-    - name: metrics
       serviceMonitor:
         enabled: true
   resources:
