@@ -20,6 +20,7 @@ metadata:
   name: users-db
   labels:
     name: users-db
+    component: sockshop
 spec:
   replicas: 1
   selector:

@@ -1,0 +1,24 @@
+prometheus:
+  prometheusSpec:
+#    By default, Prometheus discovers ServiceMonitors within its namespace,
+#    that are labeled with the same release tag as the prometheus-operator release.
+#    Sometimes, you may need to discover custom ServiceMonitors, for example used to
+#    scrape data from third-party applications. An easy way of doing this, without
+#    compromising the default ServiceMonitors discovery, is allowing Prometheus to
+#    discover all ServiceMonitors within its namespace, without applying label filtering.
+#    To do so, you can set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues to false.
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+alertmanager:
+  enabled: false
+nodeExporter:
+  enabled: true
+grafana:
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: false
+      label: grafana_datasource

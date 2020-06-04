@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sockshop-grafana-datasource
+  namespace: monitoring
+data:
+  prometheus.yaml: |-
+    {
+        "apiVersion": 1,
+        "datasources": [
+            {
+                "access":"proxy",
+                "editable": true,
+                "name": "Prometheus",
+                "isDefault": true,
+                "orgId": 1,
+                "type": "prometheus",
+                "url": "http://prometheus-operated:9090/",
+                "version": 1
+            }
+        ]
+    }

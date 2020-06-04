@@ -20,6 +20,7 @@ metadata:
   name: payment
   labels:
     app: payment
+    component: sockshop
 spec:
   selector:
     app: payment

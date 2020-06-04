@@ -17,11 +17,13 @@ and showcase its features and best practices.
 
 * [Architecture](#architecture)
 * [Project Structure](#project-structure)
+* [Pre-Requisites](#pre-requisites)
 * [Quick Start](#quick-start)
 * [Complete Application Deployment](#complete-application-deployment)
-  * [Pre-Requisites](#pre-requisites)
+  * [Additional Pre-Requisites](#additional-pre-requisites)
+  * [Install Prometheus and Grafana](#install-prometheus-and-grafana)
   * [Expose Application via a Load Balancer](#expose-application-via-a-load-balancer)
-  * [Configure Jaeger](#configure-jaeger)
+  * [Install the Jaeger Operator](#install-the-jaeger-operator)
   * [Access Swagger](#access-swagger)
   * [Cleanup](#cleanup)  
 * [Development](#development)
@@ -82,13 +84,31 @@ top-level POM file which allows you to easily build the whole project and import
 into your favorite IDE, and a _bash_ script that makes it easy to checkout and update 
 all project repositories at once.
 
+## Pre-Requisites
+
+If you are going to install a `coherence` back-end or support for Prometheus and Grafana you
+will need to carry out the following:
+
+1. Install `helm`
+
+    You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/)
+    for information on installing `helm` for your platform.
+
+1. Add the following `helm` repositories
+
+    ```bash
+    $ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+    $ helm repo add coherence https://oracle.github.io/coherence-operator/charts
+    $ helm repo update
+    ```   
+
 ## Quick Start
 
+Kubernetes scripts depend on Kustomize, so make sure that you have a newer 
+version of `kubectl` that supports it (at least 1.14 or above).
+   
 The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidonsockshop/repositories)
 and Kubernetes deployment scripts from this repo. 
-
-Kubernetes scripts depend on Kustomize, so make sure that you have a newer version of `kubectl`
-that supports it (at least 1.14 or above). 
 
 If you do, you can simply run the following command from the `sockshop` directory
 and and set the SOCKSHOP_BACKEND variable to one of the following values, 
@@ -100,33 +120,52 @@ indicating the type of back-end you want to deploy.
 * `mysql` - MySQL database back-end 
 * `redis` - Redis back-end
 
-> Note: We create a namespace called sockshop-${SOCKSHOP_BACKEND} so we can deploy multiple 
-> back-ends at a time.
+We create a namespace called sockshop-${SOCKSHOP_BACKEND} so we can deploy multiple 
+back-ends at a time.
 
-```bash
-$ export SOCKSHOP_BACKEND=core
+Choose one of the following options:
+* **Installing non-Coherence Back-end**
 
-$ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
+    ```bash
+    $ export SOCKSHOP_BACKEND=core
+    
+    $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
+    namespace/sockshop-core created
+    
+    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
+    ``` 
 
-namespace/sockshop-core created
+* **Installing a Coherence Back-end**
 
-$ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
-``` 
+    ```bash
+    $ export SOCKSHOP_BACKEND=coherence
+    
+    $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
+    namespace/sockshop-coherence created  
+  
+    $ helm install coherence/coherence-operator --version 3.0.0 \
+           --namespace sockshop-${SOCKSHOP_BACKEND} --name coherence-operator
+    
+    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
+    ``` 
 
+    
 This will merge all the files under the specified 
 directory and create all Kubernetes resources defined by them, such as deployment
 and service for each microservice.
 
+
 Port-forward the front-end UI using the following
 
-Mac/Linux
+**Mac/Linux**
 
 ```bash
 $ export FRONT_END_POD=$(kubectl get pods -n sockshop-${SOCKSHOP_BACKEND} -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}')
 $ kubectl port-forward -n sockshop-${SOCKSHOP_BACKEND} $FRONT_END_POD 8079:8079
 ```
 
-Windows:
+**Windows**
+
 ```bash
 kubectl get pods -n sockshop-%SOCKSHOP_BACKEND% -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
 SET /P FRONT_END_POD=<pod.txt
@@ -157,11 +196,48 @@ To do all of the above, you need to deploy the services into a managed Kubernete
 in the cloud, by following the same set of steps described above (except for port forwarding, 
 which is not necessary), and performing a few additional steps.
 
-### Pre-Requisites
+### Additional Pre-Requisites 
 
-You must download and install `envsubst` for your platform from 
-[https://github.com/a8m/envsubst](https://github.com/a8m/envsubst) and make it
-available in your `PATH`.
+1. Install `envsubst` 
+
+    You must download and install `envsubst` for your platform from 
+    [https://github.com/a8m/envsubst](https://github.com/a8m/envsubst) and make it
+    available in your `PATH`.
+
+### Install Prometheus and Grafana
+
+The following will install [Prometheus Operator](https://github.com/coreos/prometheus-operator/) into the 
+`monitoring` namespace using `helm`.
+   
+1. Create Prometheus pre-requisites
+
+    ```bash
+    $ kubectl apply -f k8s/optional/prometheus-rbac.yaml  
+    ```                            
+   
+1. Create Config Maps
+
+    ```bash
+    $ kubectl -n monitoring create configmap sockshop-grafana-dashboards --from-file=k8s/optional/grafana-dashboards/
+             
+    $ kubectl -n monitoring label configmap sockshop-grafana-dashboards grafana_dashboard=1  
+   
+    $ kubectl -n monitoring create -f k8s/optional/grafana-datasource-config.yaml  
+   
+    $ kubectl -n monitoring label configmap sockshop-grafana-datasource grafana_datasource=1  
+    ```     
+   
+1. Install Prometheus Operator
+
+    > Note: If you have already installed Prometheus Operator before on this Kuberenetes Cluster
+    > then set `--set prometheusOperator.createCustomResource=false`.
+
+    ```bash
+    $ helm install --namespace monitoring --version 8.13.9 \
+        --set grafana.enabled=true --name prometheus \
+        --set prometheusOperator.createCustomResource=true \
+        --values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
+    ```
 
 ### Expose Application via a Load Balancer 
 
@@ -188,7 +264,7 @@ available in your `PATH`.
     For example if your top level domain is `mycompany.com` then you
     should create a single wildcard DNS entry `*.sockshop.mycompany.com` to 
     point to your external load balancer IP address.
-    
+     
 1. Create the ingress
 
     Each time you use a different back-end you will need to create a new ingress.
@@ -209,7 +285,36 @@ available in your `PATH`.
     NAME               HOSTS                                                                                            ADDRESS           PORTS   AGE
     mp-ingress         mp.core.sockshop.mycompany.com                                                                   XXX.XXX.XXX.XXX   80      12d
     sockshop-ingress   core.sockshop.mycompany.com,jaeger.core.sockshop.mycompany.com,api.core.sockshop.mycompany.com   XXX.XXX.XXX.XXX   80      12d
-    ```         
+    ```   
+   
+1. Install a Service Monitor 
+
+    > Note: This is only required for non `coherence` backends.
+                                  
+    Each time you use a different back-end you will need to create a new service monitor.
+    
+    As for the ingress above, ensure you have set the `SOCKSHOP_BACKEND` environment variable. 
+  
+    ```bash
+    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl create -n monitoring -f -
+    ```      
+    
+1. Create the ingress for Grafana and Prometheus
+
+    Ensuring you have the `SOCKSHOP_DOMAIN` environment variable set and issue the following:
+    
+    ```bash
+    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl apply -n monitoring -f - 
+   
+    $ kubectl get ingress -n monitoring                                         
+   
+    NAME              HOSTS                                                             ADDRESS          PORTS   AGE
+    grafana-ingress   grafana.sockshop.mycompany.com,prometheus.sockshop.mycompany.com  XXX.YYY.XXX.YYY  80      12s
+    ```     
+    
+    The following URLs can be used to access Grafana and Prometheus:
+    * http://grafana.sockshop.mycompany.com/ - username: `admin`, initial password `prom-operator`
+    * http://prometheus.sockshop.mycompany.com/  
 
 1. Access the application
 
@@ -219,11 +324,11 @@ available in your `PATH`.
             
 1. Install the Jaeger Operator
  
-    The command below will create observability namespace and install Jaeger Operator into it. 
+    The command below will create `monitoring` namespace and install Jaeger Operator into it. 
     You only need to do this once, regardless of the number of backends you want to deploy.
             
     ```bash
-    $ kubectl create -f k8s/optional/jaeger-operator.yaml 
+    $ kubectl apply -f k8s/optional/jaeger-operator.yaml 
     ```
 
 1. Deploy All-in-One Jaeger Instance
@@ -264,7 +369,7 @@ available in your `PATH`.
 
 ### Cleanup
 
-1. Cleanup the ingress
+1. Cleanup the ingress for applications
 
     To cleanup the ingress for your deployment, execute the following: 
     for each `SOCKSHOP_BACKEND` you previously installed: 
@@ -274,7 +379,15 @@ available in your `PATH`.
     $ export SOCKSHOP_BACKEND=core                             
     
     $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f - -n sockshop-${SOCKSHOP_BACKEND}
-    ```   
+    ```       
+   
+1. Cleanup the ingress for Grafana and Prometheus
+   
+    If you installed Prometheus Operator, execute the following:
+    
+    ```bash
+    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl delete -n monitoring -f - 
+    ```
    
 1. Remove the deployed services
 
@@ -283,9 +396,8 @@ available in your `PATH`.
    
     ```bash   
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
-    $ export SOCKSHOP_BACKEND=core       
-   
-    $kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
+    $ export SOCKSHOP_BACKEND=core
+    $ kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
     ```  
     
 1. Remove the Load Balancer 
@@ -314,8 +426,55 @@ available in your `PATH`.
 
     ```bash
    $ kubectl delete -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND} 
+    ```  
+   
+1. Remove Prometheus and Grafana 
+
+    To cleanup the service monitors, execute the following
+    for each `SOCKSHOP_BACKEND` you previously installed: 
+   
+    ```bash
+    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl delete -n monitoring -f -
     ```
 
+   To remove the Prometheus Operator, execute the following:
+    
+    ```bash
+    $ helm delete prometheus --purge     
+   
+    $ kubectl -n monitoring delete configmap sockshop-grafana-dashboards   
+   
+    $ kubectl -n monitoring delete -f k8s/optional/grafana-datasource-config.yaml
+   
+    $ kubectl delete -f k8s/optional/prometheus-rbac.yaml 
+    ```           
+   
+   > Note: You can optionally delete the Prometheus Operator Custom Resource Definitions
+   > (CRD's) if you are not going to install Prometheus Operator again. 
+   
+   ```bash
+   $ kubectl delete crd alertmanagers.monitoring.coreos.com 
+   $ kubectl delete crd podmonitors.monitoring.coreos.com
+   $ kubectl delete crd prometheuses.monitoring.coreos.com
+   $ kubectl delete crd prometheusrules.monitoring.coreos.com 
+   $ kubectl delete crd prometheusrules.monitoring.coreos.com 
+   $ kubectl delete crd servicemonitors.monitoring.coreos.com 
+   $ kubectl delete crd thanosrulers.monitoring.coreos.com 
+   ```   
+   
+   A shorthand way of doing this if you are running Linux/Mac is:
+   ```bash
+   $ kubectl get crds -n monitoring | grep monitoring.coreos.com | awk '{print $1}' | xargs kubectl delete crd
+   ``` 
+   
+1. Remove the Coherence Operator
+
+    If you installed a `coherence` back-end then you must also un-install using the following:
+    
+    ```bash
+    $ helm delete coherence-operator --purge
+    ```                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                        
 ## Development
  
 If you want to modify the demo, you will need to check out the code for the project, build it 

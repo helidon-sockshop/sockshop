@@ -14,15 +14,21 @@
 # limitations under the License.
 #
 
-kind: Deployment
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
-  name: shipping
-  labels:
-    component: sockshop
+  name: grafana-ingress
 spec:
-  template:
-    spec:
-      containers:
-        - name: shipping
-          image: helidonsockshop/shipping-mongo:latest
+  rules:
+  - host: grafana.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus-grafana
+          servicePort: 80
+  - host: prometheus.${SOCKSHOP_DOMAIN:=sockshop.helidon.io}
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus-operated
+          servicePort: 9090
