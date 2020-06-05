@@ -209,6 +209,14 @@ which is not necessary), and performing a few additional steps.
 The following will install [Prometheus Operator](https://github.com/coreos/prometheus-operator/) into the 
 `monitoring` namespace using `helm`.
    
+1. Create the `monitoring` namespace
+
+    If you wish to install Prometheus or Jaegar Operator you must create the `monitoring` namespace using the following:
+
+    ```bash
+    $ kubectl create namespace monitoring
+    ```
+
 1. Create Prometheus pre-requisites
 
     ```bash
@@ -328,7 +336,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     You only need to do this once, regardless of the number of backends you want to deploy.
             
     ```bash
-    $ kubectl apply -f k8s/optional/jaeger-operator.yaml 
+    $ kubectl create -f k8s/optional/jaeger-operator.yaml
     ```
 
 1. Deploy All-in-One Jaeger Instance
