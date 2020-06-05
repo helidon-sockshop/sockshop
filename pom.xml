@@ -23,7 +23,7 @@
     <groupId>io.helidon.examples.sockshop</groupId>
     <artifactId>sockshop</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.4.5-SNAPSHOT</version>
     
     <modules>
         <module>../carts</module>
