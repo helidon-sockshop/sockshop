@@ -17,7 +17,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: payment
+  name: payment-http
   labels:
     app: payment
     component: sockshop
@@ -28,6 +28,21 @@ spec:
     - port: 80
       targetPort: 7001
       name: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: payment
+  labels:
+    app: payment
+    component: sockshop
+spec:
+  selector:
+    app: payment
+  ports:
+    - port: 1408
+      targetPort: 1408
+      name: grpc
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -59,6 +74,7 @@ spec:
               value: "1"
           ports:
             - containerPort: 7001
+            - containerPort: 1408
           resources:
             requests:
               cpu: 100m
