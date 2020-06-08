@@ -233,6 +233,10 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     $ kubectl -n monitoring create -f k8s/optional/grafana-datasource-config.yaml  
    
     $ kubectl -n monitoring label configmap sockshop-grafana-datasource grafana_datasource=1  
+
+    $ kubectl -n monitoring create -f https://oracle.github.io/coherence-operator/dashboards/3.0.0/coherence-grafana-dashboards.yaml
+
+    $ kubectl -n monitoring label configmap coherence-grafana-dashboards grafana_dashboard=1
     ```     
    
 1. Install Prometheus Operator

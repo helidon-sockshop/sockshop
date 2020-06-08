@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 27,
-  "iteration": 1591345107036,
+  "id": 33,
+  "iteration": 1591576978062,
   "links": [],
   "panels": [
     {
@@ -187,7 +187,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_rate_per_second{namespace=~\"$Namespace\"})",
+          "expr": "application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_rate_per_second{namespace=~\"$Namespace\"} * 60",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -196,7 +196,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Orders Per Second",
+      "title": "Orders Received per Minute",
       "type": "singlestat",
       "valueFontSize": "120%",
       "valueMaps": [
@@ -899,10 +899,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
           "tags": [],
-          "text": "sockshop-core",
-          "value": "sockshop-core"
+          "text": "sockshop-coherence",
+          "value": "sockshop-coherence"
         },
         "datasource": "Prometheus",
         "definition": "label_values(application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_seconds, namespace)",
@@ -951,5 +950,5 @@
   "variables": {
     "list": []
   },
-  "version": 17
+  "version": 1
 }
