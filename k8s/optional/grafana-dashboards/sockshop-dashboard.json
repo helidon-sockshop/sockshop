@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 33,
-  "iteration": 1591576978062,
+  "id": 44,
+  "iteration": 1591597143797,
   "links": [],
   "panels": [
     {
@@ -187,7 +187,8 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_rate_per_second{namespace=~\"$Namespace\"} * 60",
+          "expr": "sum(application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_rate_per_second{namespace=~\"$Namespace\"} * 60)",
+          "instant": false,
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -275,6 +276,7 @@
       "targets": [
         {
           "expr": "sum(application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_mean_seconds{namespace=~\"$Namespace\"})  ",
+          "instant": false,
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -926,7 +928,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
