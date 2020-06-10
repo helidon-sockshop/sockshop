@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 44,
-  "iteration": 1591597143797,
+  "iteration": 1591747442146,
   "links": [],
   "panels": [
     {
@@ -584,7 +584,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Orders Over Time",
+      "title": "Orders Processed",
       "tooltip": {
         "shared": true,
         "sort": 1,
@@ -693,7 +693,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Payment Processing Over Time",
+      "title": "Payment Processed",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -734,7 +734,7 @@
     {
       "datasource": null,
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 0,
         "y": 20
@@ -804,10 +804,12 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "decimals": 0,
+      "description": "",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -827,7 +829,7 @@
         "total": false,
         "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
@@ -843,10 +845,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_mean_seconds{namespace=~\"$Namespace\"}",
+          "expr": "vendor_grpc_requests_count_total{namespace=~\"$Namespace\"} - (vendor_grpc_requests_count_total{namespace=~\"$Namespace\"} offset $__interval) > 0",
           "instant": false,
           "interval": "",
-          "legendFormat": "Current Average",
+          "legendFormat": "Role: {{role}}",
           "refId": "A"
         }
       ],
@@ -854,7 +856,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Average Order Processing Time",
+      "title": "gRPC Requests",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -870,11 +872,12 @@
       },
       "yaxes": [
         {
-          "format": "s",
-          "label": null,
+          "decimals": 0,
+          "format": "short",
+          "label": "",
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -883,7 +886,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -901,9 +904,6 @@
       {
         "allValue": null,
         "current": {
-          "tags": [],
-          "text": "sockshop-coherence",
-          "value": "sockshop-coherence"
         },
         "datasource": "Prometheus",
         "definition": "label_values(application_io_helidon_examples_sockshop_orders_OrderResource_newOrder_seconds, namespace)",
@@ -928,7 +928,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
