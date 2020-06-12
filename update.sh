@@ -23,7 +23,7 @@ trap 'handle_trap' SIGINT
 
 USE_HTTP=false
 
-while getopts "hrstda:u:l" opt;
+while getopts "hrsctda:u:l" opt;
 do
     case ${opt} in
         h)
@@ -31,6 +31,9 @@ do
             ;;
         s)
             DO_STATUS=true
+            ;;
+        c)
+            DO_CHECKOUT=true
             ;;
         t)
             DO_STASH=true
@@ -91,6 +94,10 @@ do
     elif [ ${DO_STATUS} ]; then
         cd ${i}; echo "***${i}***"
         inv git status
+        cd ${BASE}
+    elif [ ${DO_CHECKOUT} ]; then
+        cd ${i}; echo "***${i}***"
+        inv git checkout $1
         cd ${BASE}
     elif [ ${DO_STASH} ]; then
         cd ${i}; echo "***${i}***"
