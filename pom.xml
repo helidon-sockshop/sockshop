@@ -14,7 +14,7 @@
     <groupId>io.helidon.examples.sockshop</groupId>
     <artifactId>sockshop</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.5-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     
     <modules>
         <module>../carts</module>
