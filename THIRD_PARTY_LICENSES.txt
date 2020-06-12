@@ -232,6 +232,8 @@ Sock Shop Microservices Demo Application
 Copyright (C) 2017 Weaveworks, Inc
 Apache License, Version 2.0
 
+This project uses APIs that are copyrighted by WeaveWorks, Inc under Apache 2.0 license.
+
 ***********************
 Helidon
 ***********************
