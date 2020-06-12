@@ -36,8 +36,7 @@ and showcase its features and best practices.
 
 ## Architecture
 
-The application consists of a Node.js-based front end (the same one that is used in the original
-WeaveSocks demo application) and 6 back end services (rewritten from the ground up on top of
+The application consists of 6 back end services (rewritten from the ground up on top of
 Helidon, implementing the API that the legacy `front-end` service expects).
 
 ![Architecture Diagram](./doc/images/architecture.png)
@@ -65,9 +64,9 @@ Each service has a _core_ module, which is where most of the code for the servic
 (domain model, JAX-RS resources, etc.), and which also provides a basic in-memory
 implementation of the data store that is useful for testing.
 
-Most services also have one or more data store-specific modules, which build on the
+All services also have one or more data store-specific modules, which build on the
 _core_ module and demonstrate integrations of popular data stores with Helidon 
-(MySQL, Mongo, Redis, etc.)
+(Coherence, MySQL, Mongo, Redis, etc.)
  
 You can find more details for each service within documentation pages for individual
 services, which can be accessed using the links above.
@@ -107,11 +106,10 @@ will need to carry out the following:
 Kubernetes scripts depend on Kustomize, so make sure that you have a newer 
 version of `kubectl` that supports it (at least 1.14 or above).
    
-The easiest way to try the demo is to use [provided Docker images](https://hub.docker.com/orgs/helidonsockshop/repositories)
-and Kubernetes deployment scripts from this repo. 
+The easiest way to try the demo is to use Kubernetes deployment scripts from this repo. 
 
 If you do, you can simply run the following command from the `sockshop` directory
-and and set the SOCKSHOP_BACKEND variable to one of the following values, 
+and set the `SOCKSHOP_BACKEND` variable to one of the following values, 
 indicating the type of back-end you want to deploy.
 
 * `core` - In-memory only back-end
@@ -120,7 +118,7 @@ indicating the type of back-end you want to deploy.
 * `mysql` - MySQL database back-end 
 * `redis` - Redis back-end
 
-We create a namespace called sockshop-${SOCKSHOP_BACKEND} so we can deploy multiple 
+We create a namespace called `sockshop-${SOCKSHOP_BACKEND}` so we can deploy multiple 
 back-ends at a time.
 
 Choose one of the following options:
@@ -149,13 +147,23 @@ Choose one of the following options:
     $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
     ``` 
 
-    
-This will merge all the files under the specified 
-directory and create all Kubernetes resources defined by them, such as deployment
-and service for each microservice.
+This will merge all the files under the specified directory and create all Kubernetes 
+resources defined by them, such as deployment and service for each microservice.
 
+### (Optional) Install the Original WeaveSocks Front End
 
-Port-forward the front-end UI using the following
+> Warning: The original WeaveSocks Front End has a few bugs, as well as some security issues, 
+> and it hasn't been actively maintained for a few years. However, if you want to deploy
+> it nevertheless to see how it interacts with our back-end services, please follow
+> the steps below.
+   
+Install the `front-end` service by running the following command:
+
+```bash
+$ kubectl apply -f k8s/optional/original-front-end.yaml -n sockshop-${SOCKSHOP_BACKEND}
+``` 
+   
+Port-forward to the `front-end` UI using the following
 
 **Mac/Linux**
 
@@ -183,6 +191,7 @@ browse order history, etc.
 Once you are finished, you can clean up the environment by executing the following:
 
 ```bash
+$ kubectl delete -f k8s/optional/original-front-end.yaml -n sockshop-${SOCKSHOP_BACKEND}
 $ kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
 ```   
 
@@ -486,7 +495,6 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     ```bash
     $ helm delete coherence-operator --purge
     ```                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                        
 ## Development
  
 If you want to modify the demo, you will need to check out the code for the project, build it 

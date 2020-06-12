@@ -14,4 +14,3 @@ resources:
   - payment/app.yaml
   - shipping/app.yaml
   - users/app.yaml
-  - front-end/app.yaml
