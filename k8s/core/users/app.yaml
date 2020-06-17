@@ -38,7 +38,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: users
-          image: helidonsockshop/users-core:latest
+          image: helidonsockshop/users-core:2.0.0-SNAPSHOT
           imagePullPolicy: Always
           env:
             - name: TRACING_HOST

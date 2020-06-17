@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: carts
-          image: helidonsockshop/carts-mysql:latest
+          image: helidonsockshop/carts-mysql:2.0.0-SNAPSHOT

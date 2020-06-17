@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: helidonsockshop/catalog-mongo:latest
+          image: helidonsockshop/catalog-mongo:2.0.0-SNAPSHOT

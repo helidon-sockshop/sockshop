@@ -12,7 +12,7 @@ spec:
   cluster: sockshop
   role: shipping
   replicas: 1
-  image: helidonsockshop/shipping-coherence:latest
+  image: helidonsockshop/shipping-coherence:2.0.0-SNAPSHOT
   imagePullPolicy: Always
   env:
     - name: TRACING_HOST

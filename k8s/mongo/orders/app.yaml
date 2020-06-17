@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: orders
-          image: helidonsockshop/orders-mongo:latest
+          image: helidonsockshop/orders-mongo:2.0.0-SNAPSHOT

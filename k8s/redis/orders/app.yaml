@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: orders
-          image: helidonsockshop/orders-redis:latest
+          image: helidonsockshop/orders-redis:2.0.0-SNAPSHOT
