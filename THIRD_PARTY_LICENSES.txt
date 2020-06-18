@@ -266,8 +266,9 @@ Third Party Dependencies
 ==========================================================================
 
 This project includes or depends on code from third party projects.
-Attributions are contained in 3RD-PARTY.txt
-https://github.com/oracle/helidon/blob/master/3RD-PARTY.txt
+Attributions are contained in THIRD_PARTY_LICENSES.txt.
+
+https://github.com/oracle/helidon/blob/${project.version}/THIRD_PARTY_LICENSES.txt
 
 ***********************
 Coherence CE
@@ -652,11 +653,35 @@ LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 COPYRIGHT: Copyright 2007-2020 The Apache Software Foundation
 
+NOTICE:
+Apache Groovy
+Copyright 2003-2020 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+This product bundles icons from the famfamfam.com silk icons set
+http://www.famfamfam.com/lab/icons/silk/
+Licensed under the Creative Commons Attribution Licence v2.5
+http://creativecommons.org/licenses/by/2.5/
+
 ---
 org.codehaus.groovy:groovy-xml:jar
 LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 COPYRIGHT: Copyright 2012-2020 The Apache Software Foundation
+
+NOTICE:
+Apache Groovy
+Copyright 2003-2020 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+This product bundles icons from the famfamfam.com silk icons set
+http://www.famfamfam.com/lab/icons/silk/
+Licensed under the Creative Commons Attribution Licence v2.5
+http://creativecommons.org/licenses/by/2.5/
 
 ---
 org.apache.httpcomponents:httpclient:jar
@@ -664,16 +689,38 @@ LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 COPYRIGHT: Copyright 1999-2020 The Apache Software Foundation
 
+NOTICE:
+Apache HttpComponents Client
+Copyright 1999-2020 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
 ---
 org.apache.httpcomponents:httpcore:jar
 LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 COPYRIGHT: Copyright 2005-2020 The Apache Software Foundation
+
+NOTICE:
+Apache HttpComponents Core
+Copyright 2005-2020 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
 ---
 commons-logging:commons-logging:jar
 LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 COPYRIGHT: Copyright 2003-2014 The Apache Software Foundation
+
+NOTICE:
+Apache Commons Logging
+Copyright 2003-2016 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
 
 ---
 commons-codec:commons-codec:jar
@@ -722,6 +769,18 @@ LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 COPYRIGHT: Copyright 2012-2020 The Apache Software Foundation
 
+NOTICE:
+Apache Groovy
+Copyright 2003-2020 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+This product bundles icons from the famfamfam.com silk icons set
+http://www.famfamfam.com/lab/icons/silk/
+Licensed under the Creative Commons Attribution Licence v2.5
+http://creativecommons.org/licenses/by/2.5/
+
 ---
 io.rest-assured:rest-assured-common:jar
 LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -739,6 +798,13 @@ org.apache.commons:commons-lang3:jar
 LICENSE: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 COPYRIGHT: Copyright 2011-2019 The Apache Software Foundation
+
+NOTICE:
+Apache Commons Lang
+Copyright 2001-2020 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (https://www.apache.org/).
 
 ---
 jakarta.xml.bind:jakarta.xml.bind-api:jar
@@ -2945,32 +3011,6 @@ org.yaml » snakeyaml (APACHE 2.0 http://www.apache.org/licenses/LICENSE-2.0.txt
 Apache License, Version 2.0
 
 ====================
-org.slf4j » slf4j-api (MIT- http://www.opensource.org/licenses/mit-license.php )
-
- Copyright (c) 2004-2017 QOS.ch
- All rights reserved.
-
- Permission is hereby granted, free  of charge, to any person obtaining
- a  copy  of this  software  and  associated  documentation files  (the
- "Software"), to  deal in  the Software without  restriction, including
- without limitation  the rights to  use, copy, modify,  merge, publish,
- distribute,  sublicense, and/or sell  copies of  the Software,  and to
- permit persons to whom the Software  is furnished to do so, subject to
- the following conditions:
-
- The  above  copyright  notice  and  this permission  notice  shall  be
- included in all copies or substantial portions of the Software.
-
- THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
- EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
- MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
- WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==================
-
 org.jodd » jodd-bean (BSD 2 http://jodd.org/license.html)
 
 
@@ -3711,10 +3751,24 @@ LICENSE.commons-logging.txt
 
 Apache License, Version 2.0
 
+NOTICE:
+Apache Commons Logging
+Copyright 2003-2016 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
 LICENSE.commons-lang.txt
 ---------------------------
 
 Apache License, Version 2.0
+
+NOTICE:
+Apache Commons Lang
+Copyright 2001-2020 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (https://www.apache.org/).
 
 LICENSE.caliper.txt
 --------------------
