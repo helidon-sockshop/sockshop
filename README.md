@@ -516,7 +516,7 @@ same script locally:
 
 ```bash
 $ cd helidon-sockshop
-$ . sockshop/update.sh
+$ sockshop/update.sh
 ```
 
 >**Note:** Make sure that you run the update script from the same top-level directory 
