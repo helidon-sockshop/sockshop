@@ -9,8 +9,8 @@ kind: Coherence
 metadata:
   name: carts
 spec:
-  cluster: sockshop
-  role: carts
+  cluster: SockShop
+  role: Carts
   replicas: 1
   image: helidonsockshop/carts-coherence:2.0.0-SNAPSHOT
   imagePullPolicy: Always
@@ -22,10 +22,10 @@ spec:
     - name: JAEGER_SAMPLER_PARAM
       value: "1"
   application:
-    main: io.helidon.microprofile.server.Main
+    type: helidon
   jvm:
     memory:
-      heapSize: 100m
+      heapSize: 140m
   ports:
     - name: http
       port: 7001
@@ -37,10 +37,10 @@ spec:
   resources:
     requests:
       cpu: 100m
-      memory: 100Mi
+      memory: 200Mi
     limits:
       cpu: 1000m
-      memory: 400Mi
+      memory: 200Mi
   readinessProbe:
     initialDelaySeconds: 5
     periodSeconds: 10
