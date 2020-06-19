@@ -74,17 +74,17 @@ for i in "${PROJECTS[@]}"
 do
     if [ ${UP_REMOTE} ]; then
         if [ ${USE_HTTP} ]; then
-            git remote set-url origin https://github.com/helidon-sock-shop/${i}.git
+            git remote set-url origin https://github.com/helidon-sockshop/${i}.git
         else
-            git remote set-url origin git@github.com:helidon-sock-shop/${i}.git
+            git remote set-url origin git@github.com:helidon-sockshop/${i}.git
         fi
         continue
     fi
     if [ ! -d ${i} ]; then
         if [ ${USE_HTTP} = true ]; then
-            inv git clone https://github.com/helidon-sock-shop/${i}.git
+            inv git clone https://github.com/helidon-sockshop/${i}.git
         else
-            inv git clone git@github.com:helidon-sock-shop/${i}.git
+            inv git clone git@github.com:helidon-sockshop/${i}.git
         fi
     fi
     if [ ${DO_DIFF} ]; then
