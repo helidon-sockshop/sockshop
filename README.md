@@ -41,22 +41,22 @@ Helidon, implementing the API that the legacy `front-end` service expects).
 
 ![Architecture Diagram](./doc/images/architecture.png)
 
-- **[Product Catalog](https://github.com/helidon-sock-shop/catalog)**, which provides 
+- **[Product Catalog](https://github.com/helidon-sockshop/catalog)**, which provides 
 REST API that allows you to search product catalog and retrieve individual product details;
 
-- **[Shopping Cart](https://github.com/helidon-sock-shop/carts)**, which provides 
+- **[Shopping Cart](https://github.com/helidon-sockshop/carts)**, which provides 
 REST API that allows you to manage customers' shopping carts;
 
-- **[Orders](https://github.com/helidon-sock-shop/orders)**, which provides REST API 
+- **[Orders](https://github.com/helidon-sockshop/orders)**, which provides REST API 
 that allows customers to place orders;
 
-- **[Payment](https://github.com/helidon-sock-shop/payment)**, which provides REST API 
+- **[Payment](https://github.com/helidon-sockshop/payment)**, which provides REST API 
 that allows you to process payments;
 
-- **[Shipping](https://github.com/helidon-sock-shop/shipping)**, which provides REST API 
+- **[Shipping](https://github.com/helidon-sockshop/shipping)**, which provides REST API 
 that allows you to ship orders and track shipments;
 
-- **[Users](https://github.com/helidon-sock-shop/users)**, which provides REST API 
+- **[Users](https://github.com/helidon-sockshop/users)**, which provides REST API 
 that allows you to manage customer information and provides registration and 
 authentication functionality for the customers.
 
@@ -77,7 +77,7 @@ Each back end service described above has its own Github repo, so it can be vers
 and released independently from other services. 
 
 In addition to that, there is also a main 
-[Sock Shop](https://github.com/helidon-sock-shop/sockshop) repository (the one you are 
+[Sock Shop](https://github.com/helidon-sockshop/sockshop) repository (the one you are 
 currently in), which contains Kubernetes deployment files for the whole application, 
 top-level POM file which allows you to easily build the whole project and import it 
 into your favorite IDE, and a _bash_ script that makes it easy to checkout and update 
@@ -506,16 +506,16 @@ The easiest way to checkout the source code for all the services is to run the p
 `update.sh` script:
 
 ```bash
-$ mkdir helidon-sock-shop
-$ cd helidon-sock-shop
-$ bash <(curl -s https://raw.githubusercontent.com/helidon-sock-shop/sockshop/master/update.sh)
+$ mkdir helidon-sockshop
+$ cd helidon-sockshop
+$ bash <(curl -s https://raw.githubusercontent.com/helidon-sockshop/sockshop/master/update.sh)
 ```
 
 Once you have the code locally, you can update it to the latest version by running the 
 same script locally:
 
 ```bash
-$ cd helidon-sock-shop
+$ cd helidon-sockshop
 $ . sockshop/update.sh
 ```
 
