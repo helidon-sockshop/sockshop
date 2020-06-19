@@ -12,7 +12,7 @@ spec:
   cluster: sockshop
   role: shipping
   replicas: 1
-  image: helidonsockshop/shipping-coherence:latest
+  image: helidonsockshop/shipping-coherence:1.4.5
   imagePullPolicy: Always
   env:
     - name: TRACING_HOST
@@ -22,10 +22,10 @@ spec:
     - name: JAEGER_SAMPLER_PARAM
       value: "1"
   application:
-    main: io.helidon.microprofile.server.Main
+    type: helidon
   jvm:
     memory:
-      heapSize: 100m
+      heapSize: 140m
   ports:
     - name: grpc
       port: 1408
@@ -38,10 +38,10 @@ spec:
   resources:
     requests:
       cpu: 100m
-      memory: 100Mi
+      memory: 200Mi
     limits:
       cpu: 1000m
-      memory: 400Mi
+      memory: 200Mi
   readinessProbe:
     initialDelaySeconds: 5
     periodSeconds: 10

@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: users
-          image: helidonsockshop/users-mongo:latest
+          image: helidonsockshop/users-mongo:1.4.5

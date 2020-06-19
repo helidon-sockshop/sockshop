@@ -36,7 +36,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: swagger
-          image: swaggerapi/swagger-ui:latest
+          image: swaggerapi/swagger-ui:v3.27.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

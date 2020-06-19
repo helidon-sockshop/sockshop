@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: users
-          image: helidonsockshop/users-redis:latest
+          image: helidonsockshop/users-redis:1.4.5

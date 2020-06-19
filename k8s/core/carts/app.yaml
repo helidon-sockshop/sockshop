@@ -38,7 +38,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: carts
-          image: helidonsockshop/carts-core:latest
+          image: helidonsockshop/carts-core:1.4.5
           imagePullPolicy: Always
           env:
             - name: TRACING_HOST
@@ -52,7 +52,7 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 100Mi
+              memory: 200Mi
             limits:
               cpu: 1000m
-              memory: 400Mi
+              memory: 200Mi

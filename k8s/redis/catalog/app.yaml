@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: helidonsockshop/catalog-redis:latest
+          image: helidonsockshop/catalog-redis:1.4.5

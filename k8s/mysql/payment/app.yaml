@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: payment
-          image: helidonsockshop/payment-mysql:latest
+          image: helidonsockshop/payment-mysql:1.4.5

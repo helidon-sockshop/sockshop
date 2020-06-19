@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: payment
-          image: helidonsockshop/payment-mongo:latest
+          image: helidonsockshop/payment-mongo:1.4.5

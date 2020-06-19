@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: orders
-          image: helidonsockshop/orders-mysql:latest
+          image: helidonsockshop/orders-mysql:1.4.5

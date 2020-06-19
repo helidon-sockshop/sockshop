@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: carts
-          image: helidonsockshop/carts-redis:latest
+          image: helidonsockshop/carts-redis:1.4.5

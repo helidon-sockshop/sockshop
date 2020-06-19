@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: shipping
-          image: helidonsockshop/shipping-redis:latest
+          image: helidonsockshop/shipping-redis:1.4.5

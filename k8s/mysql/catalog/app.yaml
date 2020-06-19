@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: helidonsockshop/catalog-mysql:latest
+          image: helidonsockshop/catalog-mysql:1.4.5

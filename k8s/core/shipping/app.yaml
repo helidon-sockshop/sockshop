@@ -53,7 +53,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: shipping
-          image: helidonsockshop/shipping-core:latest
+          image: helidonsockshop/shipping-core:1.4.5
           imagePullPolicy: Always
           env:
             - name: TRACING_HOST
@@ -68,7 +68,7 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 100Mi
+              memory: 200Mi
             limits:
               cpu: 1000m
-              memory: 400Mi
+              memory: 200Mi

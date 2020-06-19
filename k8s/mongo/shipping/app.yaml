@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: shipping
-          image: helidonsockshop/shipping-mongo:latest
+          image: helidonsockshop/shipping-mongo:1.4.5
