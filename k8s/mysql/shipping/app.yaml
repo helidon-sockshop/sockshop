@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: shipping
-          image: helidonsockshop/shipping-mysql:2.0.0-SNAPSHOT
+          image: helidonsockshop/shipping-mysql:2.0.0

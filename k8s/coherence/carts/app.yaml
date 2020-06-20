@@ -12,7 +12,7 @@ spec:
   cluster: SockShop
   role: Carts
   replicas: 1
-  image: helidonsockshop/carts-coherence:2.0.0-SNAPSHOT
+  image: helidonsockshop/carts-coherence:2.0.0
   imagePullPolicy: Always
   env:
     - name: TRACING_HOST

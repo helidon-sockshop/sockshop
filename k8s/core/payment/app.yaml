@@ -53,7 +53,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: payment
-          image: helidonsockshop/payment-core:2.0.0-SNAPSHOT
+          image: helidonsockshop/payment-core:2.0.0
           imagePullPolicy: Always
           env:
             - name: TRACING_HOST

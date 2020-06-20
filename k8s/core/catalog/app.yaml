@@ -38,7 +38,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: catalog
-          image: helidonsockshop/catalog-core:2.0.0-SNAPSHOT
+          image: helidonsockshop/catalog-core:2.0.0
           imagePullPolicy: Always
           env:
             - name: TRACING_HOST

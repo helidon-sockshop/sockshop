@@ -38,7 +38,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
         - name: carts
-          image: helidonsockshop/carts-core:2.0.0-SNAPSHOT
+          image: helidonsockshop/carts-core:2.0.0
           imagePullPolicy: Always
           env:
             - name: TRACING_HOST
