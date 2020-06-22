@@ -13,6 +13,8 @@ spec:
   role: payment
   replicas: 1
   image: helidonsockshop/payment-coherence:1.4.5
+  coherence:
+    logLevel: 9
   imagePullPolicy: Always
   env:
     - name: TRACING_HOST
@@ -41,7 +43,7 @@ spec:
       memory: 200Mi
     limits:
       cpu: 1000m
-      memory: 200Mi
+      memory: 400Mi
   readinessProbe:
     initialDelaySeconds: 5
     periodSeconds: 10
