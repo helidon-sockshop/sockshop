@@ -92,6 +92,8 @@ will need to carry out the following:
 
     You must have at least version `v2.14.3` of `helm`. See [here](https://helm.sh/docs/intro/install/)
     for information on installing `helm` for your platform.
+    
+    > Note: The `helm` commands below are for helm 3.3.
 
 1. Add the following `helm` repositories
 
@@ -140,12 +142,19 @@ Choose one of the following options:
     
     $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
     namespace/sockshop-coherence created  
-  
-    $ helm install coherence/coherence-operator --version 3.0.0 \
-           --namespace sockshop-${SOCKSHOP_BACKEND} --name coherence-operator
-    
+     
+    $ helm install --namespace sockshop-${SOCKSHOP_BACKEND} --version 3.0.0 \
+                   coherence-operator coherence/coherence-operator
+
     $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
-    ``` 
+    ```  
+  
+> Note: The above helm command is for helm version 3, use the following command
+> If you are using helm version 2:
+> ```bash
+> $ helm install coherence/coherence-operator --version 3.0.0 \
+>       --namespace sockshop-${SOCKSHOP_BACKEND} --name coherence-operator   
+> ```  
 
 This will merge all the files under the specified directory and create all Kubernetes 
 resources defined by them, such as deployment and service for each microservice.
@@ -255,10 +264,19 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
 
     ```bash
     $ helm install --namespace monitoring --version 8.13.9 \
+        --set grafana.enabled=true \
+        --set prometheusOperator.createCustomResource=true \
+        --values k8s/optional/prometheus-values.yaml prometheus stable/prometheus-operator 
+    ````    
+   
+    For helm version 2 use the following:
+
+    ```bash
+    $ helm install --namespace monitoring --version 8.13.9 \
         --set grafana.enabled=true --name prometheus \
         --set prometheusOperator.createCustomResource=true \
         --values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
-    ```
+    ````
 
 ### Expose Application via a Load Balancer 
 
@@ -461,15 +479,21 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
    To remove the Prometheus Operator, execute the following:
     
     ```bash
-    $ helm delete prometheus --purge     
+    $ helm delete prometheus --namespace monitoring     
    
     $ kubectl -n monitoring delete configmap sockshop-grafana-dashboards   
    
     $ kubectl -n monitoring delete -f k8s/optional/grafana-datasource-config.yaml
    
     $ kubectl delete -f k8s/optional/prometheus-rbac.yaml 
-    ```           
+    ```
    
+    For helm version 2 use the following:
+   
+    ```bash
+    $ helm delete prometheus --purge   
+    ```
+ 
    > Note: You can optionally delete the Prometheus Operator Custom Resource Definitions
    > (CRD's) if you are not going to install Prometheus Operator again. 
    
@@ -493,8 +517,15 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     If you installed a `coherence` back-end then you must also un-install using the following:
     
     ```bash
+    $ helm delete coherence-operator --namespace sockshop-${SOCKSHOP_BACKEND}  
+    ```
+   
+    For helm version 2 use the following:
+    
+    ```bash
     $ helm delete coherence-operator --purge
-    ```                                                                                                                                                                                                                                    
+    ```
+                                                                                                                                                                                                                                       
 ## Development
  
 If you want to modify the demo, you will need to check out the code for the project, build it 
