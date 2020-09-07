@@ -693,7 +693,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Payment Processed",
+      "title": "Payments Processed",
       "tooltip": {
         "shared": true,
         "sort": 0,
