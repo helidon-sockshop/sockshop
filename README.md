@@ -132,7 +132,7 @@ Choose one of the following options:
     $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
     namespace/sockshop-core created
     
-    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
+    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} --namespace sockshop-${SOCKSHOP_BACKEND}
     ``` 
 
 * **Installing a Coherence Back-end**
@@ -146,7 +146,7 @@ Choose one of the following options:
     $ helm install --namespace sockshop-${SOCKSHOP_BACKEND} --version 3.0.0 \
                    coherence-operator coherence/coherence-operator
 
-    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND}
+    $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} --namespace sockshop-${SOCKSHOP_BACKEND}
     ```  
   
 > Note: The above helm command is for helm version 3, use the following command
@@ -169,7 +169,7 @@ resources defined by them, such as deployment and service for each microservice.
 Install the `front-end` service by running the following command:
 
 ```bash
-$ kubectl apply -f k8s/optional/original-front-end.yaml -n sockshop-${SOCKSHOP_BACKEND}
+$ kubectl apply -f k8s/optional/original-front-end.yaml --namespace sockshop-${SOCKSHOP_BACKEND}
 ``` 
    
 Port-forward to the `front-end` UI using the following
@@ -177,16 +177,16 @@ Port-forward to the `front-end` UI using the following
 **Mac/Linux**
 
 ```bash
-$ export FRONT_END_POD=$(kubectl get pods -n sockshop-${SOCKSHOP_BACKEND} -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}')
-$ kubectl port-forward -n sockshop-${SOCKSHOP_BACKEND} $FRONT_END_POD 8079:8079
+$ export FRONT_END_POD=$(kubectl get pods --namespace sockshop-${SOCKSHOP_BACKEND} -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}')
+$ kubectl port-forward --namespace sockshop-${SOCKSHOP_BACKEND} $FRONT_END_POD 8079:8079
 ```
 
 **Windows**
 
 ```bash
-kubectl get pods -n sockshop-%SOCKSHOP_BACKEND% -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
+kubectl get pods --namespace sockshop-%SOCKSHOP_BACKEND% -o jsonpath='{.items[?(@.metadata.labels.app == "front-end")].metadata.name}' > pod.txt
 SET /P FRONT_END_POD=<pod.txt
-kubectl port-forward -n sockshop-%SOCKSHOP_BACKEND% %FRONT_END_POD% 8079:8079
+kubectl port-forward --namespace sockshop-%SOCKSHOP_BACKEND% %FRONT_END_POD% 8079:8079
 ```
 
 > Note: If you have installed into a namespace then add the `--namespace` option to all `kubectl` commands in these instructions.
@@ -200,9 +200,25 @@ browse order history, etc.
 Once you are finished, you can clean up the environment by executing the following:
 
 ```bash
-$ kubectl delete -f k8s/optional/original-front-end.yaml -n sockshop-${SOCKSHOP_BACKEND}
-$ kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
-```   
+$ kubectl delete -f k8s/optional/original-front-end.yaml --namespace sockshop-${SOCKSHOP_BACKEND}
+$ kubectl delete -k k8s/${SOCKSHOP_BACKEND} --namespace sockshop-${SOCKSHOP_BACKEND} 
+``` 
+
+### Scale the Coherence Back-End
+
+If you wish to scale the Coherence back-end you can issue the following command
+
+```bash
+$ export SOCKSHOP_BACKEND=coherence
+      
+# Scale the orders statefulset
+$ kubectl scale coherence --namespace sockshop-${SOCKSHOP_BACKEND} orders --replicas=3 
+
+# Scale all statefulsets 
+$ for pod in carts catalog orders payment shipping users
+    do kubectl scale coherence --namespace sockshop-${SOCKSHOP_BACKEND} $pod --replicas=3
+done
+```  
 
 ## Complete Application Deployment
 
@@ -244,17 +260,17 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
 1. Create Config Maps
 
     ```bash
-    $ kubectl -n monitoring create configmap sockshop-grafana-dashboards --from-file=k8s/optional/grafana-dashboards/
+    $ kubectl --namespace monitoring create configmap sockshop-grafana-dashboards --from-file=k8s/optional/grafana-dashboards/
              
-    $ kubectl -n monitoring label configmap sockshop-grafana-dashboards grafana_dashboard=1  
+    $ kubectl --namespace monitoring label configmap sockshop-grafana-dashboards grafana_dashboard=1  
    
-    $ kubectl -n monitoring create -f k8s/optional/grafana-datasource-config.yaml  
+    $ kubectl --namespace monitoring create -f k8s/optional/grafana-datasource-config.yaml  
    
-    $ kubectl -n monitoring label configmap sockshop-grafana-datasource grafana_datasource=1  
+    $ kubectl --namespace monitoring label configmap sockshop-grafana-datasource grafana_datasource=1  
 
-    $ kubectl -n monitoring create -f https://oracle.github.io/coherence-operator/dashboards/3.0.0/coherence-grafana-dashboards.yaml
+    $ kubectl --namespace monitoring create -f https://oracle.github.io/coherence-operator/dashboards/3.0.0/coherence-grafana-dashboards.yaml
 
-    $ kubectl -n monitoring label configmap coherence-grafana-dashboards grafana_dashboard=1
+    $ kubectl --namespace monitoring label configmap coherence-grafana-dashboards grafana_dashboard=1
     ```     
    
 1. Install Prometheus Operator
@@ -276,7 +292,20 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
         --set grafana.enabled=true --name prometheus \
         --set prometheusOperator.createCustomResource=true \
         --values k8s/optional/prometheus-values.yaml stable/prometheus-operator 
-    ````
+    ```
+   
+   **IMPORTANT**
+   
+   If you installed the Coherence back-end before you installed Prometheus Operator, you must
+   run the following to delete and re-add the deployments for Prometheus to pickup the Pods.
+   
+   ```bash 
+   $ export SOCKSHOP_BACKEND=coherence
+   
+   $ kubectl delete -k k8s/${SOCKSHOP_BACKEND} --namespace sockshop-${SOCKSHOP_BACKEND} 
+   
+   $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} --namespace sockshop-${SOCKSHOP_BACKEND} 
+   ```
 
 ### Expose Application via a Load Balancer 
 
@@ -288,7 +317,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     ```bash
     $ kubectl apply -f k8s/optional/ingress-controller.yaml 
     
-    $ kubectl get services -n ingress-nginx
+    $ kubectl get services --namespace ingress-nginx
     NAME            TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)                      AGE
     ingress-nginx   LoadBalancer   AAA.BBB.CCC.DDD   WWW.XXX.YYY.ZZZ  80:31475/TCP,443:30578/TCP   17s    
     ```      
@@ -317,9 +346,9 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com
     $ export SOCKSHOP_BACKEND=core                            
     
-    $ envsubst -i k8s/optional/ingress.yaml | kubectl apply -n sockshop-${SOCKSHOP_BACKEND} -f -
+    $ envsubst -i k8s/optional/ingress.yaml | kubectl apply --namespace sockshop-${SOCKSHOP_BACKEND} -f -
     
-    $ kubectl get ingress -n sockshop-${SOCKSHOP_BACKEND}  
+    $ kubectl get ingress --namespace sockshop-${SOCKSHOP_BACKEND}  
     
     NAME               HOSTS                                                                                            ADDRESS           PORTS   AGE
     mp-ingress         mp.core.sockshop.mycompany.com                                                                   XXX.XXX.XXX.XXX   80      12d
@@ -335,17 +364,17 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     As for the ingress above, ensure you have set the `SOCKSHOP_BACKEND` environment variable. 
   
     ```bash
-    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl create -n monitoring -f -
-    ```      
+    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl create --namespace monitoring -f -
+    ```
     
 1. Create the ingress for Grafana and Prometheus
 
     Ensuring you have the `SOCKSHOP_DOMAIN` environment variable set and issue the following:
     
     ```bash
-    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl apply -n monitoring -f - 
+    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl apply --namespace monitoring -f - 
    
-    $ kubectl get ingress -n monitoring                                         
+    $ kubectl get ingress --namespace monitoring                                         
    
     NAME              HOSTS                                                             ADDRESS          PORTS   AGE
     grafana-ingress   grafana.sockshop.mycompany.com,prometheus.sockshop.mycompany.com  XXX.YYY.XXX.YYY  80      12s
@@ -375,7 +404,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     This is required for each back-end namespace.
     
     ```bash
-    $ kubectl create -f k8s/optional/jaeger.yaml -n sockshop-${SOCKSHOP_BACKEND}
+    $ kubectl create -f k8s/optional/jaeger.yaml --namespace sockshop-${SOCKSHOP_BACKEND}
     ```                                         
 
 1. Exercise the Application and access Jaeger
@@ -395,7 +424,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     This is required for each back-end namespace.
     
     ```bash
-    $ kubectl create -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND}
+    $ kubectl create -f k8s/optional/swagger.yaml --namespace sockshop-${SOCKSHOP_BACKEND}
     ```    
    
    Access the Swagger UI at http://mp.core.sockshop.mycompany.com/swagger/.
@@ -417,7 +446,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
     $ export SOCKSHOP_BACKEND=core                             
     
-    $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f - -n sockshop-${SOCKSHOP_BACKEND}
+    $ envsubst -i k8s/optional/ingress.yaml| kubectl delete -f - --namespace sockshop-${SOCKSHOP_BACKEND}
     ```       
    
 1. Cleanup the ingress for Grafana and Prometheus
@@ -425,7 +454,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     If you installed Prometheus Operator, execute the following:
     
     ```bash
-    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl delete -n monitoring -f - 
+    $ envsubst -i k8s/optional/ingress-grafana.yaml | kubectl delete --namespace monitoring -f - 
     ```
    
 1. Remove the deployed services
@@ -436,7 +465,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     ```bash   
     $ export SOCKSHOP_DOMAIN=sockshop.mycompany.com  
     $ export SOCKSHOP_BACKEND=core
-    $ kubectl delete -k k8s/${SOCKSHOP_BACKEND} -n sockshop-${SOCKSHOP_BACKEND} 
+    $ kubectl delete -k k8s/${SOCKSHOP_BACKEND} --namespace sockshop-${SOCKSHOP_BACKEND} 
     ```  
     
 1. Remove the Load Balancer 
@@ -456,7 +485,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     For each namespace you installer Jaeger into, execute the following:
     
     ```bash
-    $ kubectl delete -f k8s/optional/jaeger.yaml -n sockshop-${SOCKSHOP_BACKEND}
+    $ kubectl delete -f k8s/optional/jaeger.yaml --namespace sockshop-${SOCKSHOP_BACKEND}
     ```   
 
 1. Remove Swagger
@@ -464,7 +493,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     For each namespace you installer Swagger into, execute the following:
 
     ```bash
-   $ kubectl delete -f k8s/optional/swagger.yaml -n sockshop-${SOCKSHOP_BACKEND} 
+   $ kubectl delete -f k8s/optional/swagger.yaml --namespace sockshop-${SOCKSHOP_BACKEND} 
     ```  
    
 1. Remove Prometheus and Grafana 
@@ -473,7 +502,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     for each `SOCKSHOP_BACKEND` you previously installed: 
    
     ```bash
-    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl delete -n monitoring -f -
+    $ envsubst -i k8s/optional/prometheus-service-monitor.yaml | kubectl delete --namespace monitoring -f -
     ```
 
    To remove the Prometheus Operator, execute the following:
@@ -481,9 +510,9 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     ```bash
     $ helm delete prometheus --namespace monitoring     
    
-    $ kubectl -n monitoring delete configmap sockshop-grafana-dashboards   
+    $ kubectl --namespace monitoring delete configmap sockshop-grafana-dashboards   
    
-    $ kubectl -n monitoring delete -f k8s/optional/grafana-datasource-config.yaml
+    $ kubectl --namespace monitoring delete -f k8s/optional/grafana-datasource-config.yaml
    
     $ kubectl delete -f k8s/optional/prometheus-rbac.yaml 
     ```
@@ -509,7 +538,7 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
    
    A shorthand way of doing this if you are running Linux/Mac is:
    ```bash
-   $ kubectl get crds -n monitoring | grep monitoring.coreos.com | awk '{print $1}' | xargs kubectl delete crd
+   $ kubectl get crds --namespace monitoring | grep monitoring.coreos.com | awk '{print $1}' | xargs kubectl delete crd
    ``` 
    
 1. Remove the Coherence Operator
