@@ -511,6 +511,10 @@ The following will install [Prometheus Operator](https://github.com/coreos/prome
     $ helm delete prometheus --namespace monitoring     
    
     $ kubectl --namespace monitoring delete configmap sockshop-grafana-dashboards   
+
+    $ kubectl --namespace monitoring delete configmap coherence-grafana-dashboards
+
+    $ kubectl --namespace monitoring delete configmap sockshop-grafana-datasource
    
     $ kubectl --namespace monitoring delete -f k8s/optional/grafana-datasource-config.yaml
    
