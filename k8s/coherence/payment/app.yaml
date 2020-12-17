@@ -25,7 +25,7 @@ spec:
     type: helidon
   jvm:
     memory:
-      heapSize: 140m
+      heapSize: 2g
   ports:
     - name: grpc
       port: 1408
@@ -38,13 +38,3 @@ spec:
         port: 80
       serviceMonitor:
         enabled: true
-  resources:
-    requests:
-      cpu: 100m
-      memory: 200Mi
-    limits:
-      cpu: 1000m
-      memory: 400Mi
-  readinessProbe:
-    initialDelaySeconds: 5
-    periodSeconds: 10
