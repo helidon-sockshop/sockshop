@@ -583,8 +583,8 @@ $ cd helidon-sockshop
 $ sockshop/update.sh
 ```
 
->**Note:** Make sure that you run the update script from the same top-level directory 
->that you used to checkout all the services into or it will fail.
+>**Note:** Make sure you run the update script from the same top-level directory 
+>that you used to checkout all the services into, or it will fail.
 
 ### Building the Code
 
@@ -597,13 +597,13 @@ the local Maven repo.
 
 ### Creating Docker Images
 
-Pre-built Docker images are already available on [DockerHub](https://hub.docker.com/orgs/helidonsockshop/repositories),
+Pre-built Docker images are already available on [GitHub](https://github.com/orgs/helidon-sockshop/packages),
 so you can simply run `docker pull` to download them and use locally.
 
 However, if you are making changes to various service implementations and need to re-create
-Docker images, you can easily do that in several different ways.
+Docker images, you can easily do that in several ways.
 
-If you only want to build Docker images locally, make sure that you have Docker Daemon
+If you only want to build Docker images locally, make sure you have Docker Daemon
 running and execute the following: 
 
 ```bash
@@ -630,8 +630,8 @@ $ mvn package -Pdocker -DskipTests -Ddocker.repo=<your_docker_repo> -Djib.goal=b
 
 ### Running Modified Application
 
-Kubernetes deployment scripts in this repository reference Docker images from the default
-Docker Hub repository, `helidon/sockshop`. You will not be able to push the images to that repo,
+Kubernetes deployment scripts in this repository reference Docker images from the GitHub
+Container Repository `ghcr.io/helidon-sockshop`. You will not be able to push the images to that repo,
 which is why you had to specify `-Ddocker.repo` argument in the command above.
 
 In order to deploy the application that uses your custom Docker images, you will also have to modify
