@@ -12,7 +12,7 @@ spec:
   cluster: SockShop
   role: Catalog
   replicas: 1
-  image: helidonsockshop/catalog-coherence:2.0.0
+  image: ghcr.io/helidon-sockshop/catalog-coherence:2.2.0
   imagePullPolicy: Always
   env:
     - name: TRACING_HOST

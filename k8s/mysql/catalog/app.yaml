@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: helidonsockshop/catalog-mysql:2.0.0
+          image: ghcr.io/helidon-sockshop/catalog-mysql:2.2.0

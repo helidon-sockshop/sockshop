@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: orders
-          image: helidonsockshop/orders-mysql:2.0.0
+          image: ghcr.io/helidon-sockshop/orders-mysql:2.2.0

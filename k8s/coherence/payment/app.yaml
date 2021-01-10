@@ -12,7 +12,7 @@ spec:
   cluster: SockShop
   role: Payment
   replicas: 1
-  image: helidonsockshop/payment-coherence:2.0.0
+  image: ghcr.io/helidon-sockshop/payment-coherence:2.2.0
   imagePullPolicy: Always
   env:
     - name: TRACING_HOST

@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: users
-          image: helidonsockshop/users-mongo:2.0.0
+          image: ghcr.io/helidon-sockshop/users-mongo:2.2.0
