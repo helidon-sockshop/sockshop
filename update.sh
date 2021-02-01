@@ -23,7 +23,7 @@ trap 'handle_trap' SIGINT
 
 USE_HTTP=false
 
-while getopts "hrsctda:u:l" opt;
+while getopts "hrsctda:u:lg" opt;
 do
     case ${opt} in
         h)
@@ -46,6 +46,8 @@ do
         u)  UNTIL=$OPTARG
             ;;
         l)  DO_LOG=true
+            ;;
+        g)  DO_TAG=true
             ;;
         r)  UP_REMOTE=true
             ;;
@@ -106,6 +108,10 @@ do
     elif [ ${DO_LOG} ]; then
         cd ${i}; echo "***${i}***"
         inv git --no-pager log --after="${AFTER}" --until="${UNTIL}"
+        cd ${BASE}
+    elif [ ${DO_TAG} ]; then
+        cd ${i}; echo "***${i}***"
+        inv git tag $1
         cd ${BASE}
     else
         cd ${i}
