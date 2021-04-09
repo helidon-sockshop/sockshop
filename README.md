@@ -143,7 +143,7 @@ Choose one of the following options:
     $ kubectl create namespace sockshop-${SOCKSHOP_BACKEND}
     namespace/sockshop-coherence created  
      
-    $ helm install --namespace sockshop-${SOCKSHOP_BACKEND} --version 3.0.0 \
+    $ helm install --namespace sockshop-${SOCKSHOP_BACKEND} \
                    coherence-operator coherence/coherence-operator
 
     $ kubectl apply -k k8s/${SOCKSHOP_BACKEND} --namespace sockshop-${SOCKSHOP_BACKEND}
